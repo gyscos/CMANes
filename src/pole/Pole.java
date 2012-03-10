@@ -17,6 +17,9 @@ public class Pole {
 
     // Constants
 
+    boolean                    useTwoPoles;
+    boolean                    useTotalInformation;
+
     public static final double poleLength      = 1.;
     public static final double pole2Length     = 0.1;
 
@@ -32,7 +35,9 @@ public class Pole {
     public static final double fricPole        = 0.000002;
     public static final double fric2Pole       = 0.000002;
 
-    public static final double totalMass       = cartMass + poleMass + pole2Mass;
+    public static final double total1Mass      = cartMass + poleMass;
+    public static final double total2Mass      = cartMass + poleMass + pole2Mass;
+
     public static final double halfPole        = 0.5 * poleLength;
     public static final double half2Pole       = 0.5 * pole2Length;
     public static final double poleMassLength  = halfPole * poleMass;
@@ -56,11 +61,15 @@ public class Pole {
 
     public boolean             lost            = false;
 
+    public Pole(boolean useTwoPoles, boolean useTotalInformation) {
+        this.useTwoPoles = useTwoPoles;
+        this.useTotalInformation = useTotalInformation;
+    }
+
     public void end() {
         try {
             thread.join();
         } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -69,14 +78,35 @@ public class Pole {
     }
 
     public double[] getData() {
-        double[] result = new double[6];
-
-        result[0] = pos;
-        result[1] = posDot;
-        result[2] = angle;
-        result[3] = angleDot;
-        result[4] = angle2;
-        result[5] = angle2Dot;
+        double[] result;
+        if (useTwoPoles) {
+            if (useTotalInformation) {
+                result = new double[6];
+                result[0] = pos;
+                result[1] = posDot;
+                result[2] = angle;
+                result[3] = angleDot;
+                result[4] = angle2;
+                result[5] = angle2Dot;
+            } else {
+                result = new double[3];
+                result[0] = pos;
+                result[1] = angle;
+                result[2] = angle2;
+            }
+        } else {
+            if (useTotalInformation) {
+                result = new double[4];
+                result[0] = pos;
+                result[1] = posDot;
+                result[2] = angle;
+                result[3] = angleDot;
+            } else {
+                result = new double[2];
+                result[0] = pos;
+                result[1] = angle;
+            }
+        }
 
         return result;
     }
@@ -122,6 +152,9 @@ public class Pole {
     }
 
     public void onStep() {
+        if (controller == null)
+            return;
+
         double[] input = getData();
         setAction(controller.getAction(input));
     }
@@ -149,12 +182,30 @@ public class Pole {
     }
 
     public void setData(double... data) {
-        pos = data[0];
-        posDot = data[1];
-        angle = data[2];
-        angleDot = data[3];
-        angle2 = data[4];
-        angle2Dot = data[5];
+        if (useTwoPoles) {
+            if (useTotalInformation) {
+                pos = data[0];
+                posDot = data[1];
+                angle = data[2];
+                angleDot = data[3];
+                angle2 = data[4];
+                angle2Dot = data[5];
+            } else {
+                pos = data[0];
+                angle = data[1];
+                angle2 = data[2];
+            }
+        } else {
+            if (useTotalInformation) {
+                pos = data[0];
+                posDot = data[1];
+                angle = data[2];
+                angleDot = data[3];
+            } else {
+                pos = data[0];
+                angle = data[1];
+            }
+        }
     }
 
     public void start() {
@@ -199,19 +250,36 @@ public class Pole {
         double angleDotSq = angleDot * angleDot;
         double angle2DotSq = angle2Dot * angle2Dot;
 
-        double common = (force + poleMassLength * angleDotSq * sinangle + pole2MassLength * angle2DotSq * sinangle2
-                - fricCart * (posDot < 0 ? -1 : 0)) / totalMass;
-        double angleDDot = (9.8 * sinangle - cosangle * common
-                - fricPole * angleDot / poleMassLength) /
-                (halfPole * (fourthirds - poleMass * cosangle * cosangle /
-                        totalMass));
+        double common;
+        if (useTwoPoles)
+            common = (force + poleMassLength * angleDotSq * sinangle + pole2MassLength * angle2DotSq * sinangle2
+                    - fricCart * (posDot < 0 ? -1 : 0)) / total2Mass;
+        else
+            common = (force + poleMassLength * angleDotSq * sinangle - fricCart * (posDot < 0 ? -1 : 0)) / total1Mass;
+
+        double angleDDot;
+        if (useTwoPoles)
+            angleDDot = (9.8 * sinangle - cosangle * common
+                    - fricPole * angleDot / poleMassLength) /
+                    (halfPole * (fourthirds - poleMass * cosangle * cosangle /
+                            total2Mass));
+        else
+            angleDDot = (9.8 * sinangle - cosangle * common
+                    - fricPole * angleDot / poleMassLength) /
+                    (halfPole * (fourthirds - poleMass * cosangle * cosangle /
+                            total1Mass));
+
         double angle2DDot = (9.8 * sinangle2 - cosangle2 * common
                 - fric2Pole * angle2Dot / pole2MassLength) /
                 (half2Pole * (fourthirds - pole2Mass * cosangle2 * cosangle2 /
-                        totalMass));
+                        total2Mass));
 
-        double posDDot = common - (poleMassLength * angleDDot * cosangle + pole2MassLength * angle2DDot * cosangle2) /
-                totalMass;
+        double posDDot;
+        if (useTwoPoles)
+            posDDot = common - (poleMassLength * angleDDot * cosangle + pole2MassLength * angle2DDot * cosangle2) /
+                    total2Mass;
+        else
+            posDDot = common - (poleMassLength * angleDDot * cosangle) / total1Mass;
 
         /*
          * double force = action * forceMag;
@@ -247,9 +315,11 @@ public class Pole {
         // Now update state.
         pos += posDot * tau;
         posDot += posDDot * tau;
+
         angle += angleDot * tau;
-        angle2 += angle2Dot * tau;
         angleDot += angleDDot * tau;
+
+        angle2 += angle2Dot * tau;
         angle2Dot += angle2DDot * tau;
 
         posList.addLast(pos);
@@ -257,6 +327,7 @@ public class Pole {
 
         angleList.addLast(angle);
         angleDotList.addLast(angleDot);
+
         angle2List.addLast(angle2);
         angle2DotList.addLast(angle2Dot);
 
@@ -275,7 +346,9 @@ public class Pole {
         while (angle2DotList.size() > 100)
             angle2DotList.removeFirst();
 
-        if (Math.abs(angle) > angleLimit || Math.abs(angle2) > angleLimit || Math.abs(pos) > posLimit) {
+        if (Math.abs(angle) > angleLimit
+                || (useTwoPoles && Math.abs(angle2) > angleLimit)
+                || Math.abs(pos) > posLimit) {
             lost = true;
             return false;
         }

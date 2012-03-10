@@ -7,9 +7,17 @@ import fr.inria.optimization.cmaes.CMAEvolutionStrategy;
 
 public class Main {
 
-    public static double getFitness(final ReseauNeurone reseau) {
+    public static int getAverageMinIterations(ReseauNeurone reseau, boolean useTwoPoles, boolean useTotalInformation,
+            int maxT, int N) {
+        int sum = 0;
+        for (int i = 0; i < N; i++)
+            sum += getMinIterations(reseau, useTwoPoles, useTotalInformation, maxT);
+        return sum / N;
+    }
 
-        Pole pole = new Pole();
+    public static double getFitness(final ReseauNeurone reseau, boolean useTwoPoles, boolean useTotalInformation) {
+
+        Pole pole = new Pole(useTwoPoles, useTotalInformation);
         pole.setController(new NeuronePoleController(reseau));
         pole.start(0, 0, 0.07, 0, 0, 0);
         pole.end();
@@ -24,7 +32,7 @@ public class Main {
      * @param maxT
      * @return
      */
-    public static int getMinIterations(ReseauNeurone reseau, int maxT) {
+    public static int getMinIterations(ReseauNeurone reseau, boolean useTwoPoles, boolean useTotalInformation, int maxT) {
 
         // Maximal value known to fail
         int max = 0;
@@ -37,9 +45,9 @@ public class Main {
         while (true) {
 
             System.out.print("Trying " + current + " ...");
-            teachReseau(reseau, current);
+            teachReseau(reseau, useTwoPoles, useTotalInformation, current);
 
-            if (isFit(reseau)) {
+            if (isFit(reseau, useTwoPoles, useTotalInformation)) {
                 System.out.println(" Success !");
                 min = current;
                 current = (current + max) / 2;
@@ -57,14 +65,14 @@ public class Main {
 
         // Bring back to working one if need be
         if (current != min)
-            teachReseau(reseau, min);
+            teachReseau(reseau, useTwoPoles, useTotalInformation, min);
 
         return min;
     }
 
-    public static boolean isFit(ReseauNeurone reseau) {
+    public static boolean isFit(ReseauNeurone reseau, boolean useTwoPoles, boolean useTotalInformation) {
 
-        Pole pole = new Pole();
+        Pole pole = new Pole(useTwoPoles, useTotalInformation);
         pole.setController(new NeuronePoleController(reseau));
         pole.start(0, 0, 0.07, 0, 0, 0);
         pole.end();
@@ -78,21 +86,26 @@ public class Main {
     public static void main(String[] args) {
 
         final ReseauNeurone reseau = new ReseauNeurone();
-        reseau.setNeurones(6, 2, 1);
+        reseau.setNeurones(4, 2, 1);
 
-        System.out.println("Min iterations for success : " + getMinIterations(reseau, 500));
+        boolean useTwoPoles = false;
+        boolean useTotalInformation = true;
 
-        showController(new NeuronePoleController(reseau));
+        System.out.println("Min iterations for success : "
+                + getAverageMinIterations(reseau, useTwoPoles, useTotalInformation, 20, 20));
+
+        showController(new NeuronePoleController(reseau), useTwoPoles, useTotalInformation);
     }
 
-    public static void showController(PoleController controller) {
-        PoleFrame frame = new PoleFrame();
+    public static void showController(PoleController controller, boolean useTwoPoles, boolean useTotalInformation) {
+        PoleFrame frame = new PoleFrame(useTwoPoles, useTotalInformation);
         frame.setController(controller);
         frame.start(0, 0, 0.07, 0, 0, 0);
         frame.end();
     }
 
-    public static void teachReseau(ReseauNeurone reseau, int iterations) {
+    public static void teachReseau(ReseauNeurone reseau, boolean useTwoPoles, boolean useTotalInformation,
+            int iterations) {
         int weightNb = reseau.getSize();
 
         CMAEvolutionStrategy cma = new CMAEvolutionStrategy();
@@ -112,13 +125,13 @@ public class Main {
             double[][] pop = cma.samplePopulation();
             for (int i = 0; i < pop.length; ++i) {
                 reseau.setWeights(pop[i]);
-                fitness[i] = getFitness(reseau);
+                fitness[i] = getFitness(reseau, useTwoPoles, useTotalInformation);
             }
             cma.updateDistribution(fitness);
         }
 
         reseau.setWeights(cma.getMeanX());
-        cma.setFitnessOfMeanX(getFitness(reseau));
+        cma.setFitnessOfMeanX(getFitness(reseau, useTwoPoles, useTotalInformation));
     }
 
 }

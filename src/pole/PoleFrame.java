@@ -20,7 +20,17 @@ public class PoleFrame extends JFrame implements Runnable {
     Thread         animatorThread;
     int            delay;
 
-    protected Pole pole = new Pole();
+    boolean        useTwoPoles;
+    boolean        useTotalInformation;
+
+    protected Pole pole;
+
+    public PoleFrame(boolean useTwoPoles, boolean useTotalInformation) {
+        this.useTwoPoles = useTwoPoles;
+        this.useTotalInformation = useTotalInformation;
+
+        pole = new Pole(useTwoPoles, useTotalInformation);
+    }
 
     public void end() {
         try {
@@ -191,14 +201,21 @@ public class PoleFrame extends JFrame implements Runnable {
 
         // Draw pole.
         // offGraphics.setColor(cartColor);
-        double shift = 0.3;
+
+        double shift;
+        if (useTwoPoles)
+            shift = 0.3;
+        else
+            shift = 0;
+
         offGraphics.drawLine(pixX(d, pole.pos - shift / 2), pixY(d, 0),
                 pixX(d, pole.pos - shift / 2 + Math.sin(pole.angle) * Pole.poleLength),
                 pixY(d, Pole.poleLength * Math.cos(pole.angle)));
 
-        offGraphics.drawLine(pixX(d, pole.pos + shift / 2), pixY(d, 0),
-                pixX(d, pole.pos + shift / 2 + Math.sin(pole.angle2) * Pole.pole2Length),
-                pixY(d, Pole.pole2Length * Math.cos(pole.angle2)));
+        if (useTwoPoles)
+            offGraphics.drawLine(pixX(d, pole.pos + shift / 2), pixY(d, 0),
+                    pixX(d, pole.pos + shift / 2 + Math.sin(pole.angle2) * Pole.pole2Length),
+                    pixY(d, Pole.pole2Length * Math.cos(pole.angle2)));
 
         // Draw action arrow.
         if (pole.action != 0) {
