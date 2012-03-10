@@ -5,7 +5,9 @@ package pole;
 
 import java.util.LinkedList;
 
-public abstract class Pole {
+public class Pole {
+
+    PoleController             controller;
 
     Thread                     thread;
 
@@ -52,6 +54,8 @@ public abstract class Pole {
     LinkedList<Double>         angle2List      = new LinkedList<Double>();
     LinkedList<Double>         angle2DotList   = new LinkedList<Double>();
 
+    public boolean             lost            = false;
+
     public void end() {
         try {
             thread.join();
@@ -61,7 +65,8 @@ public abstract class Pole {
         }
     }
 
-    public abstract void gameOver();
+    public void gameOver() {
+    }
 
     public double[] getData() {
         double[] result = new double[6];
@@ -114,10 +119,12 @@ public abstract class Pole {
         angle2 = 0.;
         angle2Dot = 0.;
         action = 0;
-
     }
 
-    public abstract void onStep();
+    public void onStep() {
+        double[] input = getData();
+        setAction(controller.getAction(input));
+    }
 
     public void resetPole() {
         pos = 0.;
@@ -135,6 +142,10 @@ public abstract class Pole {
             action = 1;
         else
             action = -1;
+    }
+
+    public void setController(PoleController controller) {
+        this.controller = controller;
     }
 
     public void setData(double... data) {
@@ -160,6 +171,7 @@ public abstract class Pole {
 
                 while (step())
                     continue;
+
                 gameOver();
 
             }
@@ -263,8 +275,10 @@ public abstract class Pole {
         while (angle2DotList.size() > 100)
             angle2DotList.removeFirst();
 
-        if (Math.abs(angle) > angleLimit || Math.abs(angle2) > angleLimit || Math.abs(pos) > posLimit)
+        if (Math.abs(angle) > angleLimit || Math.abs(angle2) > angleLimit || Math.abs(pos) > posLimit) {
+            lost = true;
             return false;
+        }
 
         steps++;
 

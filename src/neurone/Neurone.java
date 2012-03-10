@@ -52,6 +52,11 @@ public class Neurone {
         return value;
     }
 
+    public void reset() {
+        for (Synapse synapse : synapses)
+            synapse.weight = 1;
+    }
+
     public void setValue(double value) {
         this.value = value;
         ready = true;

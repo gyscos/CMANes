@@ -20,17 +20,7 @@ public class PoleFrame extends JFrame implements Runnable {
     Thread         animatorThread;
     int            delay;
 
-    protected Pole pole = new Pole() {
-                            @Override
-                            public void gameOver() {
-                                PoleFrame.this.gameOver();
-                            }
-
-                            @Override
-                            public void onStep() {
-                                PoleFrame.this.onStep();
-                            }
-                        };
+    protected Pole pole = new Pole();
 
     public void end() {
         try {
@@ -41,13 +31,10 @@ public class PoleFrame extends JFrame implements Runnable {
         }
     }
 
-    public void gameOver() {
-
-    }
-
-    public void init() {
+    public void init(double... data) {
 
         pole.init();
+        pole.setData(data);
 
         // Event handlers
         addMouseListener(new MouseAdapter() {
@@ -95,10 +82,6 @@ public class PoleFrame extends JFrame implements Runnable {
         setSize(600, 600);
     }
 
-    public void onStep() {
-
-    }
-
     @Override
     public void paint(Graphics g) {
         update(g);
@@ -143,8 +126,12 @@ public class PoleFrame extends JFrame implements Runnable {
         pole.gameOver();
     }
 
-    public void start() {
-        init();
+    public void setController(PoleController controller) {
+        pole.setController(controller);
+    }
+
+    public void start(double... data) {
+        init(data);
 
         // Start animating!
         if (animatorThread == null) {

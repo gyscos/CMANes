@@ -67,6 +67,12 @@ public class ReseauNeurone {
         return sum;
     }
 
+    public void reset() {
+        for (List<Neurone> layer : neurones)
+            for (Neurone neurone : layer)
+                neurone.reset();
+    }
+
     public int setNeurones(int... layerSizes) {
         clear();
 
