@@ -1,0 +1,275 @@
+package pole;
+
+//Inverted Pendulum simulation
+//by Chuck Anderson, 1998, with code from O'Reilly's "Java by Example"
+
+import java.util.LinkedList;
+
+public abstract class Pole {
+
+    Thread                     thread;
+
+    // Now for pole simulation
+    int                        action;
+    double                     pos, posDot, angle, angleDot, angle2, angle2Dot;
+
+    // Constants
+
+    public static final double poleLength      = 1.;
+    public static final double pole2Length     = 0.1;
+
+    public static final double cartMass        = 1.;
+    public static final double poleMass        = poleLength;
+    public static final double pole2Mass       = pole2Length;
+
+    public static final double forceMag        = 10;
+    public static final double g               = 9.8;
+    public static final double tau             = 0.01;
+
+    public static final double fricCart        = 0.0005;
+    public static final double fricPole        = 0.000002;
+    public static final double fric2Pole       = 0.000002;
+
+    public static final double totalMass       = cartMass + poleMass + pole2Mass;
+    public static final double halfPole        = 0.5 * poleLength;
+    public static final double half2Pole       = 0.5 * pole2Length;
+    public static final double poleMassLength  = halfPole * poleMass;
+    public static final double pole2MassLength = half2Pole * pole2Mass;
+
+    public static final double posLimit        = 2.4;
+    public static final double angleLimit      = Math.PI / 2;
+    public static final int    timeLimit       = 5000;
+
+    public static final double fourthirds      = 4. / 3.;
+    int                        steps;
+
+    LinkedList<Double>         posList         = new LinkedList<Double>();
+    LinkedList<Double>         posDotList      = new LinkedList<Double>();
+
+    LinkedList<Double>         angleList       = new LinkedList<Double>();
+    LinkedList<Double>         angleDotList    = new LinkedList<Double>();
+
+    LinkedList<Double>         angle2List      = new LinkedList<Double>();
+    LinkedList<Double>         angle2DotList   = new LinkedList<Double>();
+
+    public void end() {
+        try {
+            thread.join();
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    public abstract void gameOver();
+
+    public double[] getData() {
+        double[] result = new double[6];
+
+        result[0] = pos;
+        result[1] = posDot;
+        result[2] = angle;
+        result[3] = angleDot;
+        result[4] = angle2;
+        result[5] = angle2Dot;
+
+        return result;
+    }
+
+    public double getFitness() {
+        return 0.1 * getFitnessF1() + 0.9 * getFitnessF2();
+    }
+
+    public double getFitnessF1() {
+        return steps / 1000d;
+    }
+
+    public double getFitnessF2() {
+        if (steps < 100)
+            return 0;
+
+        double sum = 0;
+
+        for (double pos : posList)
+            sum += Math.abs(pos);
+        for (double posDot : posDotList)
+            sum += Math.abs(posDot);
+
+        for (double angleDot : angleDotList)
+            sum += Math.abs(angleDot);
+        for (double angle2Dot : angle2DotList)
+            sum += Math.abs(angle2Dot);
+
+        return 0.75 / sum;
+    }
+
+    public void init() {
+        steps = 0;
+
+        // Initialize pole state.
+        pos = 0.;
+        posDot = 0.;
+        angle = 0.;
+        angleDot = 0.;
+        angle2 = 0.;
+        angle2Dot = 0.;
+        action = 0;
+
+    }
+
+    public abstract void onStep();
+
+    public void resetPole() {
+        pos = 0.;
+        posDot = 0.;
+        angle = 0.;
+        angleDot = 0.;
+        angle2 = 0.;
+        angle2Dot = 0.;
+    }
+
+    public void setAction(double direction) {
+        if (direction == 0)
+            action = 0;
+        else if (direction > 0)
+            action = 1;
+        else
+            action = -1;
+    }
+
+    public void setData(double... data) {
+        pos = data[0];
+        posDot = data[1];
+        angle = data[2];
+        angleDot = data[3];
+        angle2 = data[4];
+        angle2Dot = data[5];
+    }
+
+    public void start() {
+        start(true);
+    }
+
+    public void start(final boolean toInit) {
+        (thread = new Thread() {
+            @Override
+            public void run() {
+
+                if (toInit)
+                    init();
+
+                while (step())
+                    continue;
+                gameOver();
+
+            }
+        }).start();
+    }
+
+    public void start(double... data) {
+        setData(data);
+
+        start(false);
+    }
+
+    /**
+     * Fait une étape. Retourne TRUE si il faut continuer.
+     * 
+     * @return
+     */
+    public boolean step() {
+        double force = forceMag * action;
+        double sinangle = Math.sin(angle);
+        double cosangle = Math.cos(angle);
+        double sinangle2 = Math.sin(angle2);
+        double cosangle2 = Math.cos(angle2);
+
+        double angleDotSq = angleDot * angleDot;
+        double angle2DotSq = angle2Dot * angle2Dot;
+
+        double common = (force + poleMassLength * angleDotSq * sinangle + pole2MassLength * angle2DotSq * sinangle2
+                - fricCart * (posDot < 0 ? -1 : 0)) / totalMass;
+        double angleDDot = (9.8 * sinangle - cosangle * common
+                - fricPole * angleDot / poleMassLength) /
+                (halfPole * (fourthirds - poleMass * cosangle * cosangle /
+                        totalMass));
+        double angle2DDot = (9.8 * sinangle2 - cosangle2 * common
+                - fric2Pole * angle2Dot / pole2MassLength) /
+                (half2Pole * (fourthirds - pole2Mass * cosangle2 * cosangle2 /
+                        totalMass));
+
+        double posDDot = common - (poleMassLength * angleDDot * cosangle + pole2MassLength * angle2DDot * cosangle2) /
+                totalMass;
+
+        /*
+         * double force = action * forceMag;
+         * 
+         * double sinangle = Math.sin(angle);
+         * double cosangle = Math.cos(angle);
+         * 
+         * double sinangle2 = Math.sin(angle2);
+         * double cosangle2 = Math.cos(angle2);
+         * 
+         * double mT1 = poleMass * (1 - 3. / 4. * cosangle * cosangle);
+         * double mT2 = pole2Mass * (1 - 3. / 4. * cosangle2 * cosangle2);
+         * 
+         * double fT1 = poleMass * halfPole * angleDot * angleDot * sinangle;
+         * fT1 += poleMass * cosangle * 3. / 4. * (fricPole * angleDot /
+         * (poleMass * halfPole) + g * sinangle);
+         * 
+         * double fT2 = pole2Mass * half2Pole * angle2Dot * angle2Dot *
+         * sinangle2;
+         * fT2 += pole2Mass * cosangle2 * 3. / 4. * (fric2Pole * angle2Dot /
+         * pole2Mass / half2Pole + g * sinangle2);
+         * 
+         * double posDDot = (force - fricCart * Math.signum(posDot) + fT1 + fT2)
+         * / (cartMass + mT1 + mT2);
+         * 
+         * double angleDDot = -3. / (4 * halfPole)
+         * (posDDot * cosangle + g * sinangle + fricPole * angleDot / (poleMass
+         * * halfPole));
+         * double angle2DDot = -3. / (4 * half2Pole)
+         * (posDDot * cosangle2 + g * sinangle2 + fric2Pole * angle2Dot /
+         * (pole2Mass * half2Pole));
+         */
+        // Now update state.
+        pos += posDot * tau;
+        posDot += posDDot * tau;
+        angle += angleDot * tau;
+        angle2 += angle2Dot * tau;
+        angleDot += angleDDot * tau;
+        angle2Dot += angle2DDot * tau;
+
+        posList.addLast(pos);
+        posDotList.addLast(posDot);
+
+        angleList.addLast(angle);
+        angleDotList.addLast(angleDot);
+        angle2List.addLast(angle2);
+        angle2DotList.addLast(angle2Dot);
+
+        while (posList.size() > 100)
+            posList.removeFirst();
+        while (posDotList.size() > 100)
+            posDotList.removeFirst();
+
+        while (angleList.size() > 100)
+            angleList.removeFirst();
+        while (angleDotList.size() > 100)
+            angleDotList.removeFirst();
+
+        while (angle2List.size() > 100)
+            angle2List.removeFirst();
+        while (angle2DotList.size() > 100)
+            angle2DotList.removeFirst();
+
+        if (Math.abs(angle) > angleLimit || Math.abs(angle2) > angleLimit || Math.abs(pos) > posLimit)
+            return false;
+
+        steps++;
+
+        onStep();
+
+        return steps < timeLimit;
+    }
+}
