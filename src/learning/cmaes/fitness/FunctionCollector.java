@@ -1,4 +1,4 @@
-package fr.inria.optimization.cmaes.fitness;
+package learning.cmaes.fitness;
 import java.util.Random;
 
 /** one can access the desired fitness function by giving its number

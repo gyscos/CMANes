@@ -81,10 +81,10 @@ public class ReseauNeurone {
         for (int i = 0; i < layerSizes[0]; i++) {
             addNeurone(0);
         }
-        sum += layerSizes[0];
+        // sum += layerSizes[0];
 
         for (int i = 1; i < layerSizes.length; i++) {
-            sum += layerSizes[i];
+            sum += layerSizes[i] * layerSizes[i - 1];
             for (int j = 0; j < layerSizes[i]; j++) {
                 int weightsNb = layerSizes[i - 1];
                 double[] weights = new double[weightsNb];

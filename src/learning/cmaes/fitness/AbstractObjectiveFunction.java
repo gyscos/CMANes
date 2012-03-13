@@ -1,4 +1,4 @@
-package fr.inria.optimization.cmaes.fitness;
+package learning.cmaes.fitness;
 
 
 /** extending from this abstract class implements a generic isFeasible method and adds the  

@@ -1,4 +1,4 @@
-package fr.inria.optimization.cmaes.fitness;
+package learning.cmaes.fitness;
 
 /** Interface to a single-objective function to be minimized, 
  * that accepts an array

@@ -1,6 +1,6 @@
-package fr.inria.optimization.cmaes.examples;
-import fr.inria.optimization.cmaes.CMAEvolutionStrategy;
-import fr.inria.optimization.cmaes.fitness.IObjectiveFunction;
+package learning.cmaes.examples;
+import learning.cmaes.CMAEvolutionStrategy;
+import learning.cmaes.fitness.IObjectiveFunction;
 
 /** The very well-known Rosenbrock objective function to be minimized. 
  */

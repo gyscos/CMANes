@@ -1,9 +1,9 @@
 package neurone;
 
+import learning.cmaes.CMAEvolutionStrategy;
 import pole.Pole;
 import pole.PoleController;
 import pole.PoleFrame;
-import fr.inria.optimization.cmaes.CMAEvolutionStrategy;
 
 public class Main {
 
@@ -25,6 +25,9 @@ public class Main {
 
         if (fit != null)
             fit[0] = !pole.lost;
+
+        // System.out.println(1 - pole.getFitness());
+
         return 1 - pole.getFitness();
     }
 
@@ -37,7 +40,7 @@ public class Main {
         cma.setDimension(weightNb);
         cma.setInitialX(0.05);
 
-        cma.setInitialStandardDeviation(0.2);
+        cma.setInitialStandardDeviation(0.5);
         cma.options.stopFitness = 1e-14; // optional setting
 
         double[] fitness = cma.init();
@@ -120,14 +123,14 @@ public class Main {
      */
     public static void main(String[] args) {
 
-        boolean useTwoPoles = true;
+        boolean useTwoPoles = false;
         boolean useTotalInformation = true;
 
         final ReseauNeurone reseau = makeNetwork(useTwoPoles, useTotalInformation);
         System.out.println("Using network with size " + reseau.getSize());
 
         System.out.println("Min iterations for success : "
-                + getAverageMinIterations(reseau, useTwoPoles, useTotalInformation, 5));
+                + getAverageMinIterations(reseau, useTwoPoles, useTotalInformation, 10));
 
         showController(new NeuronePoleController(reseau), useTwoPoles, useTotalInformation);
     }

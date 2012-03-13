@@ -1,13 +1,14 @@
-package fr.inria.optimization.cmaes.examples;
+package learning.cmaes.examples;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import fr.inria.optimization.cmaes.CMAEvolutionStrategy;
-import fr.inria.optimization.cmaes.CMAOptions;
-import fr.inria.optimization.cmaes.CMASolution;
-import fr.inria.optimization.cmaes.fitness.FunctionCollector;
-import fr.inria.optimization.cmaes.fitness.IObjectiveFunction;
+import learning.cmaes.CMAEvolutionStrategy;
+import learning.cmaes.CMAOptions;
+import learning.cmaes.CMASolution;
+import learning.cmaes.fitness.FunctionCollector;
+import learning.cmaes.fitness.IObjectiveFunction;
+
 
 /**  
  * Example of how to use the class CMAEvolutionStrategy including restarts with increasing 

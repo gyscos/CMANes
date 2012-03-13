@@ -1,4 +1,4 @@
-package fr.inria.optimization.cmaes;
+package learning.cmaes;
 
 import java.util.Properties;
 

@@ -1,4 +1,4 @@
-package fr.inria.optimization.cmaes;
+package learning.cmaes;
 
     /** solution point in search space, single-objective case
      *  

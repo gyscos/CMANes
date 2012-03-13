@@ -1,5 +1,5 @@
-package fr.inria.optimization.cmaes;
-import fr.inria.optimization.cmaes.ISolutionPoint;
+package learning.cmaes;
+import learning.cmaes.ISolutionPoint;
 
 /** solution point in search space. Rather plain implementation of the interface ISolutionPoint. 
  * 

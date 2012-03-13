@@ -1,4 +1,4 @@
-package fr.inria.optimization.cmaes;
+package learning.cmaes;
 //
 // (c) 2000 Sun Microsystems, Inc.
 // ALL RIGHTS RESERVED
