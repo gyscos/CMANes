@@ -12,7 +12,7 @@ public class Pole {
     Thread                     thread;
 
     // Now for pole simulation
-    int                        action;
+    double                     action;
     double                     pos, posDot, angle, angleDot, angle2, angle2Dot;
 
     // Constants
@@ -44,7 +44,10 @@ public class Pole {
     public static final double pole2MassLength = half2Pole * pole2Mass;
 
     public static final double posLimit        = 2.4;
-    public static final double angleLimit      = Math.PI / 2;
+
+    public static final double angle1Limit     = 0.2;
+    public static final double angle2Limit     = 0.63;
+
     public static final int    timeLimit       = 5000;
 
     public static final double fourthirds      = 4. / 3.;
@@ -169,12 +172,7 @@ public class Pole {
     }
 
     public void setAction(double direction) {
-        if (direction == 0)
-            action = 0;
-        else if (direction > 0)
-            action = 1;
-        else
-            action = -1;
+        action = direction;
     }
 
     public void setController(PoleController controller) {
@@ -345,6 +343,8 @@ public class Pole {
             angle2List.removeFirst();
         while (angle2DotList.size() > 100)
             angle2DotList.removeFirst();
+
+        double angleLimit = useTwoPoles ? angle2Limit : angle1Limit;
 
         if (Math.abs(angle) > angleLimit
                 || (useTwoPoles && Math.abs(angle2) > angleLimit)
