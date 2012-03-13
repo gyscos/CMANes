@@ -26,7 +26,7 @@ public class CMATeacher extends Teacher {
         boolean[] fit = new boolean[1];
         int itr = 0;
 
-        for (int counter = 0; counter < 1500; counter++) {
+        for (int counter = 0; counter < 5000; counter++) {
 
             // --- core iteration step ---
             double[][] pop = cma.samplePopulation();

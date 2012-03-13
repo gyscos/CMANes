@@ -78,7 +78,7 @@ public class GDETeacher extends Teacher {
             }
         }
 
-        for (int counter = 0; counter < 20; counter++) {
+        for (int counter = 0; counter < 500; counter++) {
 
             // --- core iteration step ---
             double[][][] pop_nextgeneration = GDE.samplePopulation();

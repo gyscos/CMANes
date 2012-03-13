@@ -181,28 +181,17 @@ public class Pole {
 
     public void setData(double... data) {
         if (useTwoPoles) {
-            if (useTotalInformation) {
-                pos = data[0];
-                posDot = data[1];
-                angle = data[2];
-                angleDot = data[3];
-                angle2 = data[4];
-                angle2Dot = data[5];
-            } else {
-                pos = data[0];
-                angle = data[1];
-                angle2 = data[2];
-            }
+            pos = data[0];
+            posDot = data[1];
+            angle = data[2];
+            angleDot = data[3];
+            angle2 = data[4];
+            angle2Dot = data[5];
         } else {
-            if (useTotalInformation) {
-                pos = data[0];
-                posDot = data[1];
-                angle = data[2];
-                angleDot = data[3];
-            } else {
-                pos = data[0];
-                angle = data[1];
-            }
+            pos = data[0];
+            posDot = data[1];
+            angle = data[2];
+            angleDot = data[3];
         }
     }
 

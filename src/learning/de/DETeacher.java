@@ -58,7 +58,7 @@ public class DETeacher extends Teacher {
             }
         }
 
-        for (int counter = 0; counter < 50; counter++) {
+        for (int counter = 0; counter < 500; counter++) {
 
             // --- core iteration step ---
             double[][] pop_nextgeneration = DE.samplePopulation();

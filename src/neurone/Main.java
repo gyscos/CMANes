@@ -2,6 +2,8 @@ package neurone;
 
 import learning.FitnessFinder;
 import learning.Teacher;
+import learning.cmaes.CMATeacher;
+import learning.de.DETeacher;
 import learning.de.GDETeacher;
 import pole.Pole;
 import pole.PoleController;
@@ -22,7 +24,14 @@ public class Main {
 
         // System.out.println(1 - pole.getFitness());
 
-        return 1 - pole.getFitness();
+        return 1 - pole.getFitnessF1();
+    }
+
+    static int getMinIterations(Teacher teacher, ReseauNeurone reseau) {
+        int weightNb = reseau.getSize();
+        int[] iterations = new int[1];
+        teacher.teach(weightNb, iterations);
+        return iterations[0];
     }
 
     public static boolean isFit(ReseauNeurone reseau, boolean useTwoPoles, boolean useTotalInformation) {
@@ -44,7 +53,6 @@ public class Main {
         final boolean useTotalInformation = true;
 
         final ReseauNeurone reseau = makeNetwork(useTwoPoles, useTotalInformation);
-        int weightNb = reseau.getSize();
 
         FitnessFinder finder = new FitnessFinder() {
             @Override
@@ -54,14 +62,13 @@ public class Main {
             }
         };
 
-        // Teacher teacher = new CMATeacher(finder);
-        // Teacher teacher = new DETeacher(finder);
-        Teacher teacher = new GDETeacher(finder);
+        int cmaScore = getMinIterations(new CMATeacher(finder), reseau);
+        int deScore = getMinIterations(new DETeacher(finder), reseau);
+        int gdeScore = getMinIterations(new GDETeacher(finder), reseau);
 
-        int[] iterations = new int[1];
-        teacher.teach(weightNb, iterations);
-
-        System.out.println("Min iterations for success : " + iterations[0]);
+        System.out.println("Min iterations for success  with CMA : " + cmaScore);
+        System.out.println("Min iterations for success with DE : " + deScore);
+        System.out.println("Min iterations for success with GDE : " + gdeScore);
 
         showController(new NeuronePoleController(reseau), useTwoPoles, useTotalInformation);
     }
