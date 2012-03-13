@@ -1,8 +1,9 @@
 package learning.de;
 
+import learning.FitnessFinder;
 import learning.Teacher;
 
-public abstract class DETeacher implements Teacher {
+public class DETeacher extends Teacher {
 
     public static int getMinPopFitness(double[] fitness) {
 
@@ -20,11 +21,12 @@ public abstract class DETeacher implements Teacher {
 
     }
 
-    @Override
-    public abstract double getFitness(double[] values);
+    public DETeacher(FitnessFinder finder) {
+        super(finder);
+    }
 
     @Override
-    public double[] teach(int weightNb) {
+    public double[] teach(int weightNb, int... iterations) {
 
         double[] fitness;
         double[] fitness_nextgeneration;
@@ -43,8 +45,17 @@ public abstract class DETeacher implements Teacher {
 
         fitness = new double[pop.length];
         fitness_nextgeneration = new double[pop.length];
+        boolean[] fit = new boolean[1];
+        int itr = 0;
+
         for (int i = 0; i < pop.length; ++i) {
-            fitness[i] = getFitness(pop[i]);
+            fitness[i] = getFitness(pop[i], fit);
+            itr++;
+
+            if (fit[0]) {
+                iterations[0] = itr;
+                return pop[i];
+            }
         }
 
         for (int counter = 0; counter < 50; counter++) {
@@ -55,7 +66,13 @@ public abstract class DETeacher implements Teacher {
             for (int i = 0; i < pop.length; ++i) {
 
                 // compute fitness/objective value
-                fitness_nextgeneration[i] = getFitness(pop_nextgeneration[i]);
+                fitness_nextgeneration[i] = getFitness(pop_nextgeneration[i], fit);
+                itr++;
+
+                if (fit[0]) {
+                    iterations[0] = itr;
+                    return pop_nextgeneration[i];
+                }
 
                 // System.out.println("Fitness NextGeneration for agent " + i +
                 // " : " +fitness_nextgeneration[i]);

@@ -1,7 +1,19 @@
 package learning;
 
-public interface Teacher {
-    public double getFitness(double[] values);
+public abstract class Teacher {
+    FitnessFinder fitnessFinder;
 
-    public double[] teach(int weightNb);
+    public Teacher(FitnessFinder finder) {
+        setFitness(finder);
+    }
+
+    public double getFitness(double[] values, boolean... fit) {
+        return fitnessFinder.getFitness(values, fit);
+    }
+
+    public void setFitness(FitnessFinder finder) {
+        fitnessFinder = finder;
+    }
+
+    public abstract double[] teach(int weightNb, int... iterations);
 }
