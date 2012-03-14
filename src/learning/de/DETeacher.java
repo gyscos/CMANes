@@ -5,6 +5,20 @@ import learning.Teacher;
 
 public class DETeacher extends Teacher {
 
+    public static double getMinFitness(double[] fitness) {
+
+        double min = 1;
+
+        for (int i = 0; i < fitness.length; ++i) {
+            if (fitness[i] < min) {
+                min = fitness[i];
+            }
+        }
+
+        return min;
+
+    }
+
     public static int getMinPopFitness(double[] fitness) {
 
         double min = 1;
@@ -21,26 +35,22 @@ public class DETeacher extends Teacher {
 
     }
 
-    public static double getMinFitness(double[] fitness) {
+    double params1;
 
-        double min = 1;
+    double params2;
 
-        for (int i = 0; i < fitness.length; ++i) {
-            if (fitness[i] < min) {
-                min = fitness[i];
-            }
-        }
+    double params3;
 
-        return min;
-
-    }
-    
-    public DETeacher(FitnessFinder finder) {
+    public DETeacher(FitnessFinder finder, double params1, double params2, double params3) {
         super(finder);
+
+        this.params1 = params1;
+        this.params2 = params2;
+        this.params3 = params3;
     }
 
     @Override
-    public double[] teach(int weightNb, int[] iterations, double[] bestFitness, int MaxIter, double params1, double params2, double params3) {
+    public double[] teach(int weightNb, int[] iterations, double[] bestFitness, int MaxIter) {
 
         double[] fitness;
         double[] fitness_nextgeneration;
@@ -79,33 +89,33 @@ public class DETeacher extends Teacher {
 
             for (int i = 0; i < pop.length; ++i) {
 
-            	if (pop_nextgeneration[i] != pop[i]) {
-            		
-            		
-	                // compute fitness/objective value
-	                fitness_nextgeneration[i] = getFitness(pop_nextgeneration[i], fit);
-	                itr++;
-	
-//	                if (fit[0]) {
-//	                    iterations[0] = itr;
-//	                    return pop_nextgeneration[i];
-//	                }
-	                
-	                // System.out.println("Fitness NextGeneration for agent " + i +
-	                 //" : " +fitness_nextgeneration[i]);
-	
-	                if (fitness_nextgeneration[i] < fitness[i]) {
-	
-	                    pop[i] = pop_nextgeneration[i];
-	                    fitness[i] = fitness_nextgeneration[i];
-	                }
-                 }
-            	
-                if (itr == MaxIter) {
-                	bestFitness[0] = getMinFitness(fitness);
-                	return  pop[i];
+                if (pop_nextgeneration[i] != pop[i]) {
+
+                    // compute fitness/objective value
+                    fitness_nextgeneration[i] = getFitness(pop_nextgeneration[i], fit);
+                    itr++;
+
+                    // if (fit[0]) {
+                    // iterations[0] = itr;
+                    // return pop_nextgeneration[i];
+                    // }
+
+                    // System.out.println("Fitness NextGeneration for agent " +
+                    // i +
+                    // " : " +fitness_nextgeneration[i]);
+
+                    if (fitness_nextgeneration[i] < fitness[i]) {
+
+                        pop[i] = pop_nextgeneration[i];
+                        fitness[i] = fitness_nextgeneration[i];
+                    }
                 }
-                
+
+                if (itr == MaxIter) {
+                    bestFitness[0] = getMinFitness(fitness);
+                    return pop[i];
+                }
+
             }
             DE.setPop(pop);
         }

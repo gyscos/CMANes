@@ -2,9 +2,7 @@ package neurone;
 
 import learning.FitnessFinder;
 import learning.Teacher;
-import learning.cmaes.CMATeacher;
 import learning.de.DETeacher;
-import learning.de.GDETeacher;
 import pole.Pole;
 import pole.PoleController;
 import pole.PoleFrame;
@@ -24,13 +22,13 @@ public class Main {
 
         // System.out.println(1 - pole.getFitness());
 
-        return - pole.getFitness();
+        return -pole.getFitness();
     }
 
     static int getMinIterations(Teacher teacher, ReseauNeurone reseau) {
         int weightNb = reseau.getSize();
         int[] iterations = new int[1];
-       // teacher.teach(weightNb, iterations);
+        // teacher.teach(weightNb, iterations);
         return iterations[0];
     }
 
@@ -63,10 +61,9 @@ public class Main {
         };
 
         int weightNb = reseau.getSize();
-        
-       //Teacher teacher = new CMATeacher(finder);
-         Teacher teacher = new DETeacher(finder);
-       //Teacher teacher = new GDETeacher(finder);
+
+        // Teacher teacher = new CMATeacher(finder);
+        // Teacher teacher = new GDETeacher(finder);
 
         double params1;
         double params2;
@@ -76,52 +73,51 @@ public class Main {
         int[] iterations;
         double[] bestFitness;
         double meanFitness;
-        
-        sumiter = 0;
-        
-        System.out.println(weightNb);
-        
-        for (int i = 0; i < 1; ++i) {
-        	
-        	sumiter = 0;
-        	meanFitness = 0;
-        	
-	        params1 = 0.5;	
-	        params2 = 0.5;
-	        params3 = 10 ;
-	        
-	        int MaxIter = 100000;
-	        
-	        for (int j = 0; j < nb_test; ++j) {
-	        	iterations = new int[1];
-	        	bestFitness = new double[1];
-	        	 
-	        	teacher.teach(weightNb, iterations, bestFitness, MaxIter, params1,  params2,  params3 );
-	        
-	        	//sumiter = sumiter + iterations[0];
-	        	
-	        	meanFitness = meanFitness + bestFitness[0];
-	        	
-	        	//System.out.println("Min iterations for success : " + iterations[0]);
-	        	System.out.println(j);
-	        	
-	        	System.out.println("Best Fitness : " + bestFitness[0]);
-	        	
-	        	
-	        }
-	        sumiter = sumiter/nb_test;
-	        meanFitness = meanFitness/nb_test;
-	        
-	        System.out.println("Average iterations for success on " + nb_test + " tests : " + sumiter);
-	        
-	        System.out.println("Average Fitness on " + nb_test + " tests : " + meanFitness);
-	        
 
-	       //showController(new NeuronePoleController(reseau), useTwoPoles, useTotalInformation);
-	        
-	        
+        sumiter = 0;
+
+        System.out.println(weightNb);
+
+        for (int i = 0; i < 1; ++i) {
+
+            sumiter = 0;
+            meanFitness = 0;
+
+            params1 = 0.5;
+            params2 = 0.5;
+            params3 = 10;
+
+            int MaxIter = 100000;
+
+            for (int j = 0; j < nb_test; ++j) {
+                iterations = new int[1];
+                bestFitness = new double[1];
+
+                Teacher teacher = new DETeacher(finder, params1, params2, params3);
+                teacher.teach(weightNb, iterations, bestFitness, MaxIter);
+
+                // sumiter = sumiter + iterations[0];
+
+                meanFitness = meanFitness + bestFitness[0];
+
+                // System.out.println("Min iterations for success : " +
+                // iterations[0]);
+                System.out.println(j);
+
+                System.out.println("Best Fitness : " + bestFitness[0]);
+
+            }
+            sumiter = sumiter / nb_test;
+            meanFitness = meanFitness / nb_test;
+
+            System.out.println("Average iterations for success on " + nb_test + " tests : " + sumiter);
+
+            System.out.println("Average Fitness on " + nb_test + " tests : " + meanFitness);
+
+            // showController(new NeuronePoleController(reseau), useTwoPoles,
+            // useTotalInformation);
+
         }
-        
 
     }
 
@@ -136,8 +132,8 @@ public class Main {
             } else {
                 reseau.setNeurones(3, 1, 1);
                 for (int i = 0; i < 3; i++)
-                
-                	reseau.addSynapse(0, i, 2, 0, 1, true);
+
+                    reseau.addSynapse(0, i, 2, 0, 1, true);
                 reseau.addSynapse(1, 0, 1, 0, 1, false);
                 reseau.addSynapse(1, 0, 2, 0, 1, false);
                 reseau.addSynapse(2, 0, 1, 0, 1, false);
