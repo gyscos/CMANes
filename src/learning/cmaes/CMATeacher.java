@@ -33,6 +33,7 @@ public class CMATeacher extends Teacher {
 
         cma.setInitialStandardDeviation(sigma);
         cma.options.stopFitness = 1e-14; // optional setting
+        cma.options.lowerStandardDeviations = new double[] { sigma / 2 };
 
         double[] fitness = cma.init();
 
