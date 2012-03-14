@@ -13,23 +13,26 @@ public class Main {
 
     static void findBestSigma(final boolean useTwoPoles, final boolean useTotalInformation, int N) {
         final ReseauNeurone reseau = makeNetwork(useTwoPoles, useTotalInformation);
+        FitnessFinder finder = new FitnessFinder() {
+            @Override
+            public Pair<Double, Boolean> getFitness(double[] values) {
+                reseau.setWeights(values);
+                return Main.getFitness(reseau, useTwoPoles, useTotalInformation);
+            }
+        };
 
         double start = 0.01;
         double end = 5.01;
 
-        double steps = 501;
+        double steps = 51;
 
         for (int i = 0; i < steps; i++) {
+
+            // Find sigma
             double x = i / (steps - 1);
             double sigma = start + (end - start) * x;
 
-            FitnessFinder finder = new FitnessFinder() {
-                @Override
-                public Pair<Double, Boolean> getFitness(double[] values) {
-                    reseau.setWeights(values);
-                    return Main.getFitness(reseau, useTwoPoles, useTotalInformation);
-                }
-            };
+            // See how it fares
             Teacher teacher = new CMATeacher(finder, sigma);
             int iter = getAverageMinIterations(teacher, reseau, N);
             System.out.println("[sigma = " + sigma + "] : " + iter);
