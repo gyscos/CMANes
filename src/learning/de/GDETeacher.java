@@ -91,7 +91,7 @@ public class GDETeacher extends Teacher {
         fitness = new double[4][group_pop_size];
         fitness_nextgeneration = new double[4][group_pop_size];
 
-        boolean fit = false;
+        boolean fit[] = new boolean[1];
 
         int itr = 0;
 
@@ -99,7 +99,7 @@ public class GDETeacher extends Teacher {
             for (int i = 0; i < group_pop_size; ++i) {
                 fitness[n][i] = getFitness(group_pop[n][i], fit);
                 itr++;
-                if (findIter && fit) {
+                if (findIter && fit[0]) {
                     iterations[0] = itr;
                     return group_pop[n][i];
                 }
@@ -127,7 +127,7 @@ public class GDETeacher extends Teacher {
                         fitness_nextgeneration[n][i] = getFitness(pop_nextgeneration[n][i], fit);
                         itr++;
 
-                        if (findIter && fit) {
+                        if (findIter && fit[0]) {
                             iterations[0] = itr;
                             return group_pop[n][i];
                         }

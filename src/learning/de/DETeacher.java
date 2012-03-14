@@ -6,22 +6,12 @@ import learning.Teacher;
 public class DETeacher extends Teacher {
 
     public static double getMinFitness(double[] fitness) {
-
-        double min = 1;
-
-        for (int i = 0; i < fitness.length; ++i) {
-            if (fitness[i] < min) {
-                min = fitness[i];
-            }
-        }
-
-        return min;
-
+        return fitness[getMinPopFitness(fitness)];
     }
 
     public static int getMinPopFitness(double[] fitness) {
 
-        double min = 1;
+        double min = fitness[0];
         int minPop = 0;
 
         for (int i = 0; i < fitness.length; ++i) {
@@ -70,7 +60,7 @@ public class DETeacher extends Teacher {
 
         fitness = new double[pop.length];
         fitness_nextgeneration = new double[pop.length];
-        boolean fit = false;
+        boolean fit[] = new boolean[1];
         int itr = 0;
 
         for (int i = 0; i < pop.length; ++i) {
@@ -78,7 +68,7 @@ public class DETeacher extends Teacher {
             itr++;
 
             if (findIter) {
-                if (fit) {
+                if (fit[0]) {
                     iterations[0] = itr;
                     return pop[i];
                 }
@@ -98,7 +88,7 @@ public class DETeacher extends Teacher {
                     fitness_nextgeneration[i] = getFitness(pop_nextgeneration[i], fit);
                     itr++;
 
-                    if (findIter && fit) {
+                    if (findIter && fit[0]) {
                         iterations[0] = itr;
                         return pop[i];
                     }
@@ -118,6 +108,7 @@ public class DETeacher extends Teacher {
             DE.setPop(pop);
         }
 
+        bestFitness[0] = getMinFitness(fitness);
         return pop[getMinPopFitness(fitness)];
     }
 }

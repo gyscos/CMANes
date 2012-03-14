@@ -7,7 +7,7 @@ public abstract class Teacher {
         setFitness(finder);
     }
 
-    public double getFitness(double[] values, boolean... fit) {
+    public double getFitness(double[] values, boolean[] fit) {
         return fitnessFinder.getFitness(values, fit);
     }
 
@@ -17,12 +17,12 @@ public abstract class Teacher {
 
     public abstract double[] teach(int weightNb, int[] iterations, double[] bestFitness, int MaxIter);
 
-    public double[] teachEndFitness(int weightNb, int maxIter, double... bestFitness) {
+    public double[] teachEndFitness(int weightNb, int maxIter, double[] bestFitness) {
 
         return teach(weightNb, null, bestFitness, maxIter);
     }
 
-    public double[] teachMinIter(int weightNb, int... iterations) {
+    public double[] teachMinIter(int weightNb, int[] iterations) {
 
         return teach(weightNb, iterations, null, -1);
     }

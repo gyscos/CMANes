@@ -24,7 +24,7 @@ public class CMATeacher extends Teacher {
 
         double[] fitness = cma.init();
 
-        boolean fit = false;
+        boolean fit[] = new boolean[1];
         int itr = 0;
 
         for (int counter = 0; counter < 500000; counter++) {
@@ -37,7 +37,7 @@ public class CMATeacher extends Teacher {
                 itr++;
 
                 if (findIter) {
-                    if (fit) {
+                    if (fit[0]) {
                         iterations[0] = itr;
                         return pop[i];
                     }

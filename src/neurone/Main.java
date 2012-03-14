@@ -62,13 +62,10 @@ public class Main {
 
         int weightNb = reseau.getSize();
 
-        // Teacher teacher = new CMATeacher(finder);
-        // Teacher teacher = new GDETeacher(finder);
-
         double params1;
         double params2;
         double params3;
-        int nb_test = 100;
+        int nb_test = 1;
         int sumiter;
         double meanFitness;
 
@@ -88,20 +85,20 @@ public class Main {
             int MaxIter = 100000;
 
             for (int j = 0; j < nb_test; ++j) {
-                double bestFitness = 0;
+                double[] bestFitness = new double[1];
 
                 Teacher teacher = new DETeacher(finder, params1, params2, params3);
                 teacher.teachEndFitness(weightNb, MaxIter, bestFitness);
 
                 // sumiter = sumiter + iterations[0];
 
-                meanFitness += bestFitness;
+                meanFitness += bestFitness[0];
 
                 // System.out.println("Min iterations for success : " +
                 // iterations[0]);
                 System.out.println(j);
 
-                System.out.println("Best Fitness : " + bestFitness);
+                System.out.println("Best Fitness : " + bestFitness[0]);
 
             }
             sumiter = sumiter / nb_test;
@@ -160,5 +157,9 @@ public class Main {
         frame.setController(controller);
         frame.start(0, 0, 0.07, 0, 0, 0);
         frame.end();
+    }
+
+    static void test(int... a) {
+        a[0] = 1;
     }
 }
