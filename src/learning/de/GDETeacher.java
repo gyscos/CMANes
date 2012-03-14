@@ -59,7 +59,9 @@ public class GDETeacher extends Teacher {
     }
 
     @Override
-    public double[] teach(int weightNb, int[] iterations, double[] bestFitness, int MaxIter) {
+    public double[] teach(int weightNb, int[] iterations, double[] bestFitness, int maxIter) {
+        boolean findIter = maxIter == -1;
+
         int PNI = (int) params3;
 
         double[] GFBEST_PNI = new double[4];
@@ -88,14 +90,16 @@ public class GDETeacher extends Teacher {
 
         fitness = new double[4][group_pop_size];
         fitness_nextgeneration = new double[4][group_pop_size];
-        boolean[] fit = new boolean[1];
+
+        boolean fit = false;
+
         int itr = 0;
 
         for (int n = 0; n < 4; ++n) {
             for (int i = 0; i < group_pop_size; ++i) {
                 fitness[n][i] = getFitness(group_pop[n][i], fit);
                 itr++;
-                if (fit[0]) {
+                if (findIter && fit) {
                     iterations[0] = itr;
                     return group_pop[n][i];
                 }
@@ -123,11 +127,10 @@ public class GDETeacher extends Teacher {
                         fitness_nextgeneration[n][i] = getFitness(pop_nextgeneration[n][i], fit);
                         itr++;
 
-                        // if (fit[0]) {
-                        // iterations[0] = itr;
-                        // return group_pop[n][i];
-                        // }
-                        //
+                        if (findIter && fit) {
+                            iterations[0] = itr;
+                            return group_pop[n][i];
+                        }
 
                         if (fitness_nextgeneration[n][i] < fitness[n][i]) {
 
@@ -141,7 +144,7 @@ public class GDETeacher extends Teacher {
                         }
                     }
 
-                    if (itr == MaxIter) {
+                    if (!findIter && itr == maxIter) {
                         bestFitness[0] = getMinFitness(fitness);
                         return group_pop[n][i];
                     }

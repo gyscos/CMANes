@@ -50,7 +50,8 @@ public class DETeacher extends Teacher {
     }
 
     @Override
-    public double[] teach(int weightNb, int[] iterations, double[] bestFitness, int MaxIter) {
+    public double[] teach(int weightNb, int[] iterations, double[] bestFitness, int maxIter) {
+        boolean findIter = maxIter == -1;
 
         double[] fitness;
         double[] fitness_nextgeneration;
@@ -69,16 +70,18 @@ public class DETeacher extends Teacher {
 
         fitness = new double[pop.length];
         fitness_nextgeneration = new double[pop.length];
-        boolean[] fit = new boolean[1];
+        boolean fit = false;
         int itr = 0;
 
         for (int i = 0; i < pop.length; ++i) {
             fitness[i] = getFitness(pop[i], fit);
             itr++;
 
-            if (fit[0]) {
-                iterations[0] = itr;
-                return pop[i];
+            if (findIter) {
+                if (fit) {
+                    iterations[0] = itr;
+                    return pop[i];
+                }
             }
         }
 
@@ -95,23 +98,18 @@ public class DETeacher extends Teacher {
                     fitness_nextgeneration[i] = getFitness(pop_nextgeneration[i], fit);
                     itr++;
 
-                    // if (fit[0]) {
-                    // iterations[0] = itr;
-                    // return pop_nextgeneration[i];
-                    // }
-
-                    // System.out.println("Fitness NextGeneration for agent " +
-                    // i +
-                    // " : " +fitness_nextgeneration[i]);
+                    if (findIter && fit) {
+                        iterations[0] = itr;
+                        return pop[i];
+                    }
 
                     if (fitness_nextgeneration[i] < fitness[i]) {
-
                         pop[i] = pop_nextgeneration[i];
                         fitness[i] = fitness_nextgeneration[i];
                     }
                 }
 
-                if (itr == MaxIter) {
+                if (!findIter && itr == maxIter) {
                     bestFitness[0] = getMinFitness(fitness);
                     return pop[i];
                 }

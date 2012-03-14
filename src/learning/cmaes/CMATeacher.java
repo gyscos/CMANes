@@ -10,7 +10,8 @@ public class CMATeacher extends Teacher {
     }
 
     @Override
-    public double[] teach(int weightNb, int[] iterations, double[] bestFitness, int MaxIter) {
+    public double[] teach(int weightNb, int[] iterations, double[] bestFitness, int maxIter) {
+        boolean findIter = maxIter == -1;
 
         CMAEvolutionStrategy cma = new CMAEvolutionStrategy();
         cma.options.verbosity = -1;
@@ -23,7 +24,7 @@ public class CMATeacher extends Teacher {
 
         double[] fitness = cma.init();
 
-        boolean[] fit = new boolean[1];
+        boolean fit = false;
         int itr = 0;
 
         for (int counter = 0; counter < 500000; counter++) {
@@ -35,45 +36,20 @@ public class CMATeacher extends Teacher {
                 fitness[i] = getFitness(pop[i], fit);
                 itr++;
 
-                // if (fit[0]) {
-                // iterations[0] = itr;
-                //
-                // for (int j = 0; j < weightNb; j++) {
-                // //System.out.println(pop[i][j]);
-                // }
-                //
-                // return pop[i];
-                //
-                // }
-
-                // System.out.println(itr);
-
-                // if (itr == MaxIter ||
-                // Math.abs(cma.getBestRecentFunctionValue() -
-                // cma.getWorstRecentFunctionValue()) < 0.0001) {
-
-                if (itr == MaxIter) {
-                    bestFitness[0] = cma.getBestRecentFunctionValue();
-                    return cma.getMeanX();
+                if (findIter) {
+                    if (fit) {
+                        iterations[0] = itr;
+                        return pop[i];
+                    }
+                } else {
+                    if (itr == maxIter) {
+                        bestFitness[0] = cma.getBestRecentFunctionValue();
+                        return cma.getMeanX();
+                    }
                 }
-
             }
             cma.updateDistribution(fitness);
-
-            // System.out.println("worst pop " +
-            // cma.getWorstRecentFunctionValue());
-            // System.out.println("Best pop " +
-            // cma.getBestRecentFunctionValue());
-
-            // if ( Math.abs(cma.getBestRecentFunctionValue() -
-            // cma.getWorstRecentFunctionValue()) < 0.01){
-            // iterations[0] = 99999999;
-            // return cma.getMeanX();
-
-            // }
-
         }
-
         return cma.getMeanX();
     }
 

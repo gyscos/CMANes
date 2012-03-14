@@ -17,7 +17,7 @@ public class Main {
         pole.start(0, 0, 0.07, 0, 0, 0);
         pole.end();
 
-        if (fit != null)
+        if (fit != null && fit.length > 0)
             fit[0] = !pole.lost;
 
         // System.out.println(1 - pole.getFitness());
@@ -90,11 +90,10 @@ public class Main {
             int MaxIter = 100000;
 
             for (int j = 0; j < nb_test; ++j) {
-                iterations = new int[1];
                 bestFitness = new double[1];
 
                 Teacher teacher = new DETeacher(finder, params1, params2, params3);
-                teacher.teach(weightNb, iterations, bestFitness, MaxIter);
+                teacher.teach(weightNb, bestFitness, MaxIter);
 
                 // sumiter = sumiter + iterations[0];
 
