@@ -17,9 +17,12 @@ public class CMATeacher extends Teacher {
     }
 
     @Override
-    public double[] teach(int weightNb, int[] iterations, double[] bestFitness, int maxIter) {
-        boolean findIter = (iterations != null && iterations.length != 0);
-        boolean getFitness = (maxIter == -1);
+    public Result teach(int weightNb, int maxIter) {
+
+        boolean findIter = (maxIter == -1);
+
+        int iterations = 0;
+        double bestFitness = 0;
 
         CMAEvolutionStrategy cma = new CMAEvolutionStrategy();
         cma.options.verbosity = -1;
@@ -44,23 +47,19 @@ public class CMATeacher extends Teacher {
                 fitness[i] = getFitness(pop[i], fit);
                 itr++;
 
-                if (findIter) {
-                    if (fit[0]) {
-                        iterations[0] = itr;
-                        if (!getFitness)
-                            return pop[i];
-                    }
+                if (fit[0]) {
+                    iterations = itr;
+                    if (findIter)
+                        return new Result(pop[i], iterations, bestFitness);
                 }
-                if (getFitness) {
-                    if (itr == maxIter) {
-                        bestFitness[0] = cma.getBestRecentFunctionValue();
-                        return cma.getMeanX();
-                    }
+                if (!findIter && itr == maxIter) {
+                    bestFitness = cma.getBestRecentFunctionValue();
+                    return new Result(cma.getMeanX(), iterations, bestFitness);
                 }
             }
             cma.updateDistribution(fitness);
         }
-        return cma.getMeanX();
+        return new Result(cma.getMeanX(), iterations, bestFitness);
     }
 
 }

@@ -59,9 +59,10 @@ public class GDETeacher extends Teacher {
     }
 
     @Override
-    public double[] teach(int weightNb, int[] iterations, double[] bestFitness, int maxIter) {
-        boolean findIter = (iterations != null && iterations.length != 0);
-        boolean getFitness = (maxIter == -1);
+    public Result teach(int weightNb, int maxIter) {
+        boolean findIter = (maxIter == -1);
+        int iterations = 0;
+        double bestFitness = 0;
 
         int PNI = (int) params3;
 
@@ -100,10 +101,10 @@ public class GDETeacher extends Teacher {
             for (int i = 0; i < group_pop_size; ++i) {
                 fitness[n][i] = getFitness(group_pop[n][i], fit);
                 itr++;
-                if (findIter && fit[0]) {
-                    iterations[0] = itr;
-                    if (!getFitness)
-                        return group_pop[n][i];
+                if (fit[0]) {
+                    iterations = itr;
+                    if (findIter)
+                        return new Result(group_pop[n][i], iterations, bestFitness);
                 }
             }
         }
@@ -129,10 +130,10 @@ public class GDETeacher extends Teacher {
                         fitness_nextgeneration[n][i] = getFitness(pop_nextgeneration[n][i], fit);
                         itr++;
 
-                        if (findIter && fit[0]) {
-                            iterations[0] = itr;
-                            if (!getFitness)
-                                return group_pop[n][i];
+                        if (fit[0]) {
+                            iterations = itr;
+                            if (findIter)
+                                return new Result(group_pop[n][i], iterations, bestFitness);
                         }
 
                         if (fitness_nextgeneration[n][i] < fitness[n][i]) {
@@ -147,9 +148,9 @@ public class GDETeacher extends Teacher {
                         }
                     }
 
-                    if (getFitness && itr == maxIter) {
-                        bestFitness[0] = getMinFitness(fitness);
-                        return group_pop[n][i];
+                    if (!findIter && itr == maxIter) {
+                        bestFitness = getMinFitness(fitness);
+                        return new Result(group_pop[n][i], iterations, bestFitness);
                     }
 
                 }
@@ -208,7 +209,7 @@ public class GDETeacher extends Teacher {
         }
 
         int minPop = getMinPopFitness(fitness);
-        return group_pop[Math.round(minPop / group_pop_size)][minPop - group_pop_size
-                * Math.round(minPop / group_pop_size)];
+        return new Result(group_pop[Math.round(minPop / group_pop_size)][minPop - group_pop_size
+                * Math.round(minPop / group_pop_size)], iterations, bestFitness);
     }
 }

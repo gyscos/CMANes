@@ -1,6 +1,18 @@
 package learning;
 
 public abstract class Teacher {
+    public static class Result {
+        public double[] values;
+        public int      iterations;
+        public double   bestFitness;
+
+        public Result(double[] values, int iterations, double bestFitness) {
+            this.values = values;
+            this.iterations = iterations;
+            this.bestFitness = bestFitness;
+        }
+    }
+
     FitnessFinder fitnessFinder;
 
     public Teacher(FitnessFinder finder) {
@@ -15,15 +27,9 @@ public abstract class Teacher {
         fitnessFinder = finder;
     }
 
-    public abstract double[] teach(int weightNb, int[] iterations, double[] bestFitness, int MaxIter);
-
-    public double[] teachEndFitness(int weightNb, int maxIter, double[] bestFitness) {
-
-        return teach(weightNb, null, bestFitness, maxIter);
+    public Result teach(int weightNb) {
+        return teach(weightNb, -1);
     }
 
-    public double[] teachMinIter(int weightNb, int[] iterations) {
-
-        return teach(weightNb, iterations, null, -1);
-    }
+    public abstract Result teach(int weightNb, int maxIter);
 }

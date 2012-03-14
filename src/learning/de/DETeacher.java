@@ -40,9 +40,10 @@ public class DETeacher extends Teacher {
     }
 
     @Override
-    public double[] teach(int weightNb, int[] iterations, double[] bestFitness, int maxIter) {
-        boolean findIter = (iterations != null && iterations.length != 0);
-        boolean getFitness = (maxIter == -1);
+    public Result teach(int weightNb, int maxIter) {
+        boolean findIter = (maxIter == -1);
+        int iterations = 0;
+        double bestFitness = 0;
 
         double[] fitness;
         double[] fitness_nextgeneration;
@@ -68,12 +69,10 @@ public class DETeacher extends Teacher {
             fitness[i] = getFitness(pop[i], fit);
             itr++;
 
-            if (findIter) {
-                if (fit[0]) {
-                    iterations[0] = itr;
-                    if (!getFitness)
-                        return pop[i];
-                }
+            if (fit[0]) {
+                iterations = itr;
+                if (findIter)
+                    return new Result(pop[i], iterations, bestFitness);
             }
         }
 
@@ -90,10 +89,10 @@ public class DETeacher extends Teacher {
                     fitness_nextgeneration[i] = getFitness(pop_nextgeneration[i], fit);
                     itr++;
 
-                    if (findIter && fit[0]) {
-                        iterations[0] = itr;
-                        if (!getFitness)
-                            return pop[i];
+                    if (fit[0]) {
+                        iterations = itr;
+                        if (findIter)
+                            return new Result(pop[i], iterations, bestFitness);
                     }
 
                     if (fitness_nextgeneration[i] < fitness[i]) {
@@ -102,16 +101,16 @@ public class DETeacher extends Teacher {
                     }
                 }
 
-                if (getFitness && itr == maxIter) {
-                    bestFitness[0] = getMinFitness(fitness);
-                    return pop[i];
+                if (!findIter && itr == maxIter) {
+                    bestFitness = getMinFitness(fitness);
+                    return new Result(pop[i], iterations, bestFitness);
                 }
 
             }
             DE.setPop(pop);
         }
 
-        bestFitness[0] = getMinFitness(fitness);
-        return pop[getMinPopFitness(fitness)];
+        bestFitness = getMinFitness(fitness);
+        return new Result(pop[getMinPopFitness(fitness)], iterations, bestFitness);
     }
 }

@@ -114,10 +114,6 @@ public class Pole {
         return result;
     }
 
-    public double getFitness() {
-        return 0.1 * getFitnessF1() + 0.9 * getFitnessF2();
-    }
-
     public double getFitnessF1() {
         return steps / 1000d;
     }
@@ -139,6 +135,14 @@ public class Pole {
             sum += Math.abs(angle2Dot);
 
         return 0.75 / sum;
+    }
+
+    public double getNormalFitness() {
+        return getFitnessF1();
+    }
+
+    public double getSpecialFitness() {
+        return 0.1 * getFitnessF1() + 0.9 * getFitnessF2();
     }
 
     public void init() {
