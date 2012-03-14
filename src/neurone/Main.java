@@ -70,8 +70,6 @@ public class Main {
         double params3;
         int nb_test = 100;
         int sumiter;
-        int[] iterations;
-        double[] bestFitness;
         double meanFitness;
 
         sumiter = 0;
@@ -90,20 +88,20 @@ public class Main {
             int MaxIter = 100000;
 
             for (int j = 0; j < nb_test; ++j) {
-                bestFitness = new double[1];
+                double bestFitness = 0;
 
                 Teacher teacher = new DETeacher(finder, params1, params2, params3);
-                teacher.teach(weightNb, bestFitness, MaxIter);
+                teacher.teachEndFitness(weightNb, MaxIter, bestFitness);
 
                 // sumiter = sumiter + iterations[0];
 
-                meanFitness = meanFitness + bestFitness[0];
+                meanFitness += bestFitness;
 
                 // System.out.println("Min iterations for success : " +
                 // iterations[0]);
                 System.out.println(j);
 
-                System.out.println("Best Fitness : " + bestFitness[0]);
+                System.out.println("Best Fitness : " + bestFitness);
 
             }
             sumiter = sumiter / nb_test;

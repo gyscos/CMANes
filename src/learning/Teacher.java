@@ -15,15 +15,15 @@ public abstract class Teacher {
         fitnessFinder = finder;
     }
 
-    public double[] teach(int weightNb, double[] bestFitness, int maxIter) {
+    public abstract double[] teach(int weightNb, int[] iterations, double[] bestFitness, int MaxIter);
+
+    public double[] teachEndFitness(int weightNb, int maxIter, double... bestFitness) {
 
         return teach(weightNb, null, bestFitness, maxIter);
     }
 
-    public double[] teach(int weightNb, int... iterations) {
+    public double[] teachMinIter(int weightNb, int... iterations) {
 
         return teach(weightNb, iterations, null, -1);
     }
-
-    public abstract double[] teach(int weightNb, int[] iterations, double[] bestFitness, int MaxIter);
 }
