@@ -9,6 +9,23 @@ import pole.PoleFrame;
 
 public class Main {
 
+    public static double getAverageFitness(Teacher teacher, int weightNb, int maxIter, int N) {
+
+        double sum = 0;
+
+        for (int j = 0; j < N; ++j) {
+            double[] bestFitness = new double[1];
+
+            teacher.teachEndFitness(weightNb, N, bestFitness);
+
+            sum += bestFitness[0];
+
+            System.out.println("[" + j + "] Best Fitness : " + bestFitness[0]);
+
+        }
+        return sum / N;
+    }
+
     public static double getFitness(final ReseauNeurone reseau, boolean useTwoPoles, boolean useTotalInformation,
             boolean... fit) {
 
@@ -28,7 +45,7 @@ public class Main {
     static int getMinIterations(Teacher teacher, ReseauNeurone reseau) {
         int weightNb = reseau.getSize();
         int[] iterations = new int[1];
-        // teacher.teach(weightNb, iterations);
+        teacher.teachMinIter(weightNb, iterations);
         return iterations[0];
     }
 
@@ -62,12 +79,8 @@ public class Main {
 
         int weightNb = reseau.getSize();
 
-        double params1;
-        double params2;
-        double params3;
         int nb_test = 1;
         int sumiter;
-        double meanFitness;
 
         sumiter = 0;
 
@@ -76,43 +89,24 @@ public class Main {
         for (int i = 0; i < 1; ++i) {
 
             sumiter = 0;
-            meanFitness = 0;
 
-            params1 = 0.5;
-            params2 = 0.5;
-            params3 = 10;
+            double params1 = 0.5;
+            double params2 = 0.5;
+            double params3 = 10;
 
-            int MaxIter = 100000;
+            Teacher teacher = new DETeacher(finder, params1, params2, params3);
+            int maxIter = 100000;
 
-            for (int j = 0; j < nb_test; ++j) {
-                double[] bestFitness = new double[1];
-
-                Teacher teacher = new DETeacher(finder, params1, params2, params3);
-                teacher.teachEndFitness(weightNb, MaxIter, bestFitness);
-
-                // sumiter = sumiter + iterations[0];
-
-                meanFitness += bestFitness[0];
-
-                // System.out.println("Min iterations for success : " +
-                // iterations[0]);
-                System.out.println(j);
-
-                System.out.println("Best Fitness : " + bestFitness[0]);
-
-            }
-            sumiter = sumiter / nb_test;
-            meanFitness = meanFitness / nb_test;
+            double fitness = getAverageFitness(teacher, weightNb, maxIter, nb_test);
 
             System.out.println("Average iterations for success on " + nb_test + " tests : " + sumiter);
 
-            System.out.println("Average Fitness on " + nb_test + " tests : " + meanFitness);
+            System.out.println("Average Fitness on " + nb_test + " tests : " + fitness);
 
             // showController(new NeuronePoleController(reseau), useTwoPoles,
             // useTotalInformation);
 
         }
-
     }
 
     static ReseauNeurone makeNetwork(boolean useTwoPoles, boolean useTotalInformation) {
