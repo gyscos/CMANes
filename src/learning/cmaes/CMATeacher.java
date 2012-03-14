@@ -1,11 +1,12 @@
 package learning.cmaes;
 
 import learning.FitnessFinder;
+import learning.Pair;
 import learning.Teacher;
 
 public class CMATeacher extends Teacher {
 
-    double sigma = 0.5;
+    final double sigma;
 
     public CMATeacher(FitnessFinder finder) {
         this(finder, 0.5);
@@ -35,7 +36,6 @@ public class CMATeacher extends Teacher {
 
         double[] fitness = cma.init();
 
-        boolean fit[] = new boolean[1];
         int itr = 0;
 
         for (int counter = 0; counter < 500000; counter++) {
@@ -43,11 +43,17 @@ public class CMATeacher extends Teacher {
             // --- core iteration step ---
             double[][] pop = cma.samplePopulation();
 
+            // System.out.println("Pop length : " + pop.length);
+
             for (int i = 0; i < pop.length; ++i) {
-                fitness[i] = getFitness(pop[i], fit);
+                Pair<Double, Boolean> pair = getFitness(pop[i]);
+
+                fitness[i] = pair.a;
+
+                // System.out.println("Fitness : " + pair.a);
                 itr++;
 
-                if (fit[0]) {
+                if (pair.b) {
                     iterations = itr;
                     if (findIter)
                         return new Result(pop[i], iterations, bestFitness);

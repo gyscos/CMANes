@@ -19,8 +19,8 @@ public abstract class Teacher {
         setFitness(finder);
     }
 
-    public double getFitness(double[] values, boolean[] fit) {
-        return fitnessFinder.getFitness(values, fit);
+    public Pair<Double, Boolean> getFitness(double[] values) {
+        return fitnessFinder.getFitness(values);
     }
 
     public void setFitness(FitnessFinder finder) {

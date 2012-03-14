@@ -1,6 +1,7 @@
 package learning.de;
 
 import learning.FitnessFinder;
+import learning.Pair;
 import learning.Teacher;
 
 public class DETeacher extends Teacher {
@@ -62,14 +63,14 @@ public class DETeacher extends Teacher {
 
         fitness = new double[pop.length];
         fitness_nextgeneration = new double[pop.length];
-        boolean fit[] = new boolean[1];
         int itr = 0;
 
         for (int i = 0; i < pop.length; ++i) {
-            fitness[i] = getFitness(pop[i], fit);
+            Pair<Double, Boolean> pair = getFitness(pop[i]);
+            fitness[i] = pair.a;
             itr++;
 
-            if (fit[0]) {
+            if (pair.b) {
                 iterations = itr;
                 if (findIter)
                     return new Result(pop[i], iterations, bestFitness);
@@ -86,10 +87,11 @@ public class DETeacher extends Teacher {
                 if (pop_nextgeneration[i] != pop[i]) {
 
                     // compute fitness/objective value
-                    fitness_nextgeneration[i] = getFitness(pop_nextgeneration[i], fit);
+                    Pair<Double, Boolean> pair = getFitness(pop_nextgeneration[i]);
+                    fitness_nextgeneration[i] = pair.a;
                     itr++;
 
-                    if (fit[0]) {
+                    if (pair.b) {
                         iterations = itr;
                         if (findIter)
                             return new Result(pop[i], iterations, bestFitness);

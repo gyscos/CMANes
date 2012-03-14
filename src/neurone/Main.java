@@ -1,6 +1,7 @@
 package neurone;
 
 import learning.FitnessFinder;
+import learning.Pair;
 import learning.Teacher;
 import learning.cmaes.CMATeacher;
 import learning.de.DETeacher;
@@ -24,13 +25,13 @@ public class Main {
 
             FitnessFinder finder = new FitnessFinder() {
                 @Override
-                public double getFitness(double[] values, boolean... fit) {
+                public Pair<Double, Boolean> getFitness(double[] values) {
                     reseau.setWeights(values);
-                    return Main.getFitness(reseau, useTwoPoles, useTotalInformation, fit);
+                    return Main.getFitness(reseau, useTwoPoles, useTotalInformation);
                 }
             };
             Teacher teacher = new CMATeacher(finder, sigma);
-            int iter = getMinIterations(teacher, reseau, N);
+            int iter = getAverageMinIterations(teacher, reseau, N);
             System.out.println("[sigma = " + sigma + "] : " + iter);
         }
     }
@@ -51,30 +52,28 @@ public class Main {
         return sum / N;
     }
 
-    public static double getFitness(final ReseauNeurone reseau, boolean useTwoPoles, boolean useTotalInformation,
-            boolean[] fit) {
+    static int getAverageMinIterations(Teacher teacher, ReseauNeurone reseau, int N) {
+        int sum = 0;
+        for (int i = 0; i < N; i++)
+            sum += getMinIterations(teacher, reseau);
+        return sum / N;
+    }
+
+    public static Pair<Double, Boolean> getFitness(final ReseauNeurone reseau, boolean useTwoPoles,
+            boolean useTotalInformation) {
 
         Pole pole = new Pole(useTwoPoles, useTotalInformation);
         pole.setController(new NeuronePoleController(reseau));
         pole.start(0, 0, 0.07, 0, 0, 0);
         pole.end();
 
-        if (fit != null && fit.length > 0)
-            fit[0] = !pole.lost;
-
-        return -pole.getFitnessF1();
+        // Score is inverted because we are trying to minimize
+        return new Pair<Double, Boolean>(-pole.getFitnessF1(), !pole.lost);
     }
 
     static int getMinIterations(Teacher teacher, ReseauNeurone reseau) {
         int weightNb = reseau.getSize();
         return teacher.teach(weightNb).iterations;
-    }
-
-    static int getMinIterations(Teacher teacher, ReseauNeurone reseau, int N) {
-        int sum = 0;
-        for (int i = 0; i < N; i++)
-            sum += getMinIterations(teacher, reseau);
-        return sum / N;
     }
 
     public static boolean isFit(ReseauNeurone reseau, boolean useTwoPoles, boolean useTotalInformation) {
@@ -141,22 +140,15 @@ public class Main {
         frame.end();
     }
 
-    static void test(int... a) {
-        a[0] = 1;
-    }
-
-    public void test() {
-
-        final boolean useTwoPoles = true;
-        final boolean useTotalInformation = true;
+    public void test(final boolean useTwoPoles, final boolean useTotalInformation) {
 
         final ReseauNeurone reseau = makeNetwork(useTwoPoles, useTotalInformation);
 
         FitnessFinder finder = new FitnessFinder() {
             @Override
-            public double getFitness(double[] values, boolean... fit) {
+            public Pair<Double, Boolean> getFitness(double[] values) {
                 reseau.setWeights(values);
-                return Main.getFitness(reseau, useTwoPoles, useTotalInformation, fit);
+                return Main.getFitness(reseau, useTwoPoles, useTotalInformation);
             }
         };
 

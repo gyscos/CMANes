@@ -3,6 +3,7 @@ package learning.de;
 import java.util.LinkedList;
 
 import learning.FitnessFinder;
+import learning.Pair;
 import learning.Teacher;
 
 public class GDETeacher extends Teacher {
@@ -93,15 +94,14 @@ public class GDETeacher extends Teacher {
         fitness = new double[4][group_pop_size];
         fitness_nextgeneration = new double[4][group_pop_size];
 
-        boolean fit[] = new boolean[1];
-
         int itr = 0;
 
         for (int n = 0; n < 4; ++n) {
             for (int i = 0; i < group_pop_size; ++i) {
-                fitness[n][i] = getFitness(group_pop[n][i], fit);
+                Pair<Double, Boolean> pair = getFitness(group_pop[n][i]);
+                fitness[n][i] = pair.a;
                 itr++;
-                if (fit[0]) {
+                if (pair.b) {
                     iterations = itr;
                     if (findIter)
                         return new Result(group_pop[n][i], iterations, bestFitness);
@@ -127,10 +127,11 @@ public class GDETeacher extends Teacher {
 
                     if (pop_nextgeneration[n][i] != group_pop[n][i]) {
 
-                        fitness_nextgeneration[n][i] = getFitness(pop_nextgeneration[n][i], fit);
+                        Pair<Double, Boolean> pair = getFitness(pop_nextgeneration[n][i]);
+                        fitness_nextgeneration[n][i] = pair.a;
                         itr++;
 
-                        if (fit[0]) {
+                        if (pair.b) {
                             iterations = itr;
                             if (findIter)
                                 return new Result(group_pop[n][i], iterations, bestFitness);
