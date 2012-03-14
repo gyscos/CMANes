@@ -15,5 +15,5 @@ public abstract class Teacher {
         fitnessFinder = finder;
     }
 
-    public abstract double[] teach(int weightNb, int... iterations);
+    public abstract double[] teach(int weightNb, int[] iterations, double[] bestFitness,int MaxIter, double params1, double params2, double params3);
 }

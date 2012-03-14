@@ -26,19 +26,38 @@ public class GDETeacher extends Teacher {
 
     }
 
+ 
+    public static double getMinFitness(double[][] fitness) {
+
+        double min = 1;
+
+        for (int n = 0; n < 4; ++n) {
+            for (int i = 0; i < fitness[n].length; ++i) {
+                if (fitness[n][i] < min) {
+
+                    min = fitness[n][i];
+
+                }
+            }
+        }
+
+        return min;
+
+    }
+    
+    
     public GDETeacher(FitnessFinder finder) {
         super(finder);
     }
 
     @Override
-    public double[] teach(int weightNb, int... iterations) {
-        int PNI = 5;
+    public double[] teach(int weightNb, int[] iterations, double[] bestFitness, int MaxIter, double params1, double params2, double params3) {
+        int PNI = (int)params3;
 
-        // a supprimer
-        int cpt_iter = 0;
+
 
         double[] GFBEST_PNI = new double[4];
-        double[] GFBEST = new double[4];
+        
 
         int counter_frozen_individual = 0;
         LinkedList<Integer> frozList = new LinkedList<Integer>();
@@ -49,10 +68,10 @@ public class GDETeacher extends Teacher {
         GroupedDifferentialEvolution GDE = new GroupedDifferentialEvolution();
 
         GDE.setDimension(weightNb);
-        GDE.setF(0.5);
-        GDE.setCr(0.5);
-        int pop_size = weightNb * 12;
-        int group_pop_size = weightNb * 3;
+        GDE.setF(params1);
+        GDE.setCr(params2);
+        int pop_size = weightNb * 8;
+        int group_pop_size = weightNb * 2;
 
         GDE.setPop_size(pop_size);
         GDE.setGroupPop_size(group_pop_size);
@@ -78,7 +97,7 @@ public class GDETeacher extends Teacher {
             }
         }
 
-        for (int counter = 0; counter < 500; counter++) {
+        for (int counter = 0; counter < 50000; counter++) {
 
             // --- core iteration step ---
             double[][][] pop_nextgeneration = GDE.samplePopulation();
@@ -93,31 +112,43 @@ public class GDETeacher extends Teacher {
 
             for (int n = 0; n < 4; ++n) {
                 for (int i = 0; i < group_pop_size; ++i) {
-
-                    fitness_nextgeneration[n][i] = getFitness(pop_nextgeneration[n][i], fit);
-                    itr++;
-                    if (fit[0]) {
-                        iterations[0] = itr;
-                        return group_pop[n][i];
+                	
+                	if (pop_nextgeneration[n][i] != group_pop[n][i]) {
+                		
+                	
+	                    fitness_nextgeneration[n][i] = getFitness(pop_nextgeneration[n][i], fit);
+	                    itr++;
+	                    
+//	                    if (fit[0]) {
+//	                        iterations[0] = itr;
+//	                        return group_pop[n][i];
+//	                    }
+//	
+	                  
+	
+	                    if (fitness_nextgeneration[n][i] < fitness[n][i]) {
+	
+	                        group_pop[n][i] = pop_nextgeneration[n][i];
+	                        fitness[n][i] = fitness_nextgeneration[n][i];
+	                    }
+	
+	                    if (fitness[n][i] < GFBEST_current[n]) {
+	                        GFBEST_current[n] = fitness[n][i];
+	                        MinPop[n] = i;
+	                    }
+                	}
+                	
+                    if (itr == MaxIter) {
+                    	bestFitness[0] = getMinFitness(fitness);
+                    	return group_pop[n][i];
                     }
-
-                    cpt_iter = cpt_iter + 1;
-
-                    if (fitness_nextgeneration[n][i] < fitness[n][i]) {
-
-                        group_pop[n][i] = pop_nextgeneration[n][i];
-                        fitness[n][i] = fitness_nextgeneration[n][i];
-                    }
-
-                    if (fitness[n][i] < GFBEST_current[n]) {
-                        GFBEST_current[n] = fitness[n][i];
-                        MinPop[n] = i;
-                    }
-
+                    
                 }
 
-                System.out.println("Best Fitness groupe " + n + " : " + GFBEST_current[n]);
-                System.out.println(cpt_iter);
+
+                
+               //System.out.println("Best Fitness groupe " + n + " : " + GFBEST_current[n]);
+                //System.out.println(cpt_iter);
             }
 
             if (counter % PNI == 0) {
@@ -131,7 +162,7 @@ public class GDETeacher extends Teacher {
                         GF = GF + GFBEST_PNI[n] - GFBEST_current[n];
                     }
                     GF = GF / 100;
-                    GFBEST_PNI = GFBEST_current;
+                    
 
                     int[] LG = GDE.getLG();
                     int[] Lx = GDE.getLx();
@@ -160,6 +191,7 @@ public class GDETeacher extends Teacher {
 
                     GDE.setLG(LG);
                     GDE.setLx(Lx);
+                    GFBEST_PNI = GFBEST_current;
                 }
 
             }

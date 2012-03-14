@@ -21,12 +21,26 @@ public class DETeacher extends Teacher {
 
     }
 
+    public static double getMinFitness(double[] fitness) {
+
+        double min = 1;
+
+        for (int i = 0; i < fitness.length; ++i) {
+            if (fitness[i] < min) {
+                min = fitness[i];
+            }
+        }
+
+        return min;
+
+    }
+    
     public DETeacher(FitnessFinder finder) {
         super(finder);
     }
 
     @Override
-    public double[] teach(int weightNb, int... iterations) {
+    public double[] teach(int weightNb, int[] iterations, double[] bestFitness, int MaxIter, double params1, double params2, double params3) {
 
         double[] fitness;
         double[] fitness_nextgeneration;
@@ -34,9 +48,9 @@ public class DETeacher extends Teacher {
         DifferentialEvolution DE = new DifferentialEvolution();
 
         DE.setDimension(weightNb);
-        DE.setF(0.5);
-        DE.setCr(0.5);
-        DE.setPop_size(weightNb * 10);
+        DE.setF(params1);
+        DE.setCr(params2);
+        DE.setPop_size(weightNb * 8);
 
         // iteration loop
 
@@ -58,33 +72,40 @@ public class DETeacher extends Teacher {
             }
         }
 
-        for (int counter = 0; counter < 500; counter++) {
+        for (int counter = 0; counter < 10000; counter++) {
 
             // --- core iteration step ---
             double[][] pop_nextgeneration = DE.samplePopulation();
 
             for (int i = 0; i < pop.length; ++i) {
 
-                // compute fitness/objective value
-                fitness_nextgeneration[i] = getFitness(pop_nextgeneration[i], fit);
-                itr++;
-
-                if (fit[0]) {
-                    iterations[0] = itr;
-                    return pop_nextgeneration[i];
+            	if (pop_nextgeneration[i] != pop[i]) {
+            		
+            		
+	                // compute fitness/objective value
+	                fitness_nextgeneration[i] = getFitness(pop_nextgeneration[i], fit);
+	                itr++;
+	
+//	                if (fit[0]) {
+//	                    iterations[0] = itr;
+//	                    return pop_nextgeneration[i];
+//	                }
+	                
+	                // System.out.println("Fitness NextGeneration for agent " + i +
+	                 //" : " +fitness_nextgeneration[i]);
+	
+	                if (fitness_nextgeneration[i] < fitness[i]) {
+	
+	                    pop[i] = pop_nextgeneration[i];
+	                    fitness[i] = fitness_nextgeneration[i];
+	                }
+                 }
+            	
+                if (itr == MaxIter) {
+                	bestFitness[0] = getMinFitness(fitness);
+                	return  pop[i];
                 }
-
-                // System.out.println("Fitness NextGeneration for agent " + i +
-                // " : " +fitness_nextgeneration[i]);
-
-                if (fitness_nextgeneration[i] < fitness[i]) {
-
-                    pop[i] = pop_nextgeneration[i];
-                    fitness[i] = fitness_nextgeneration[i];
-                }
-
-                System.out.println("Fitness for agent " + i + " : " + fitness[i]);
-
+                
             }
             DE.setPop(pop);
         }

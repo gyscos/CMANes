@@ -57,7 +57,8 @@ public class GroupedDifferentialEvolution {
         for (int n = 0; n < 4; ++n) {
             for (int i = 0; i < group_pop_size; ++i) {
                 for (int j = 0; j < dimension; ++j) {
-                    group_pop[n][i][j] = 2 * rand.nextDouble() - 1;
+                    group_pop[n][i][j] =rand.nextGaussian()*3;
+                // System.out.println(rand.nextGaussian()*2);
                 }
             }
         }
@@ -82,7 +83,7 @@ public class GroupedDifferentialEvolution {
         int b;
         int c;
 
-        double[][][] y = new double[4][pop_size][dimension];
+        double[][][] y = new double[4][group_pop_size][dimension];
 
         for (int n = 0; n < 4; ++n) {
 
@@ -100,7 +101,7 @@ public class GroupedDifferentialEvolution {
                         } while (b == a || b == i);
                         do {
                             c = rand.nextInt(group_pop_size);
-                        } while (c == a || c == b | c == i);
+                        } while (c == a || c == b || c == i);
 
                         int jrand = rand.nextInt(dimension);
                         double[] u = new double[dimension];
@@ -111,6 +112,7 @@ public class GroupedDifferentialEvolution {
 
                         for (int j = 0; j < dimension; ++j) {
                             if (rand.nextDouble() < Cr || j == jrand) {
+                            	
                                 y[n][i] = u;
 
                             } else {
@@ -138,7 +140,7 @@ public class GroupedDifferentialEvolution {
                         } while (b == a || b == i + n * group_pop_size);
                         do {
                             c = rand.nextInt(pop_size);
-                        } while (c == a || c == b | c == i + n * group_pop_size);
+                        } while (c == a || c == b || c == i + n * group_pop_size);
 
                         int jrand = rand.nextInt(dimension);
                         double[] u = new double[dimension];

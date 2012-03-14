@@ -48,7 +48,7 @@ public class Pole {
     public static final double angle1Limit     = 0.2;
     public static final double angle2Limit     = 0.63;
 
-    public static final int    timeLimit       = 100000;
+    public static final int    timeLimit       = 1000;
 
     public static final double fourthirds      = 4. / 3.;
     int                        steps;

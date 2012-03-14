@@ -39,7 +39,8 @@ public class DifferentialEvolution {
         pop = new double[pop_size][dimension];
         for (int i = 0; i < pop_size; ++i) {
             for (int j = 0; j < dimension; ++j) {
-                pop[i][j] = 2 * rand.nextDouble() - 1;
+                //pop[i][j] = 2 * rand.nextDouble() - 1;
+            	pop[i][j] = rand.nextGaussian() *3;
             }
         }
         return pop;
