@@ -102,10 +102,6 @@ public class Main {
             System.out.println("Average iterations for success on " + nb_test + " tests : " + sumiter);
 
             System.out.println("Average Fitness on " + nb_test + " tests : " + fitness);
-
-            // showController(new NeuronePoleController(reseau), useTwoPoles,
-            // useTotalInformation);
-
         }
     }
 

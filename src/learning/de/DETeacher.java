@@ -41,7 +41,8 @@ public class DETeacher extends Teacher {
 
     @Override
     public double[] teach(int weightNb, int[] iterations, double[] bestFitness, int maxIter) {
-        boolean findIter = maxIter == -1;
+        boolean findIter = (iterations != null && iterations.length != 0);
+        boolean getFitness = (maxIter == -1);
 
         double[] fitness;
         double[] fitness_nextgeneration;
@@ -70,7 +71,8 @@ public class DETeacher extends Teacher {
             if (findIter) {
                 if (fit[0]) {
                     iterations[0] = itr;
-                    return pop[i];
+                    if (!getFitness)
+                        return pop[i];
                 }
             }
         }
@@ -90,7 +92,8 @@ public class DETeacher extends Teacher {
 
                     if (findIter && fit[0]) {
                         iterations[0] = itr;
-                        return pop[i];
+                        if (!getFitness)
+                            return pop[i];
                     }
 
                     if (fitness_nextgeneration[i] < fitness[i]) {
@@ -99,7 +102,7 @@ public class DETeacher extends Teacher {
                     }
                 }
 
-                if (!findIter && itr == maxIter) {
+                if (getFitness && itr == maxIter) {
                     bestFitness[0] = getMinFitness(fitness);
                     return pop[i];
                 }

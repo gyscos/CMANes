@@ -5,13 +5,21 @@ import learning.Teacher;
 
 public class CMATeacher extends Teacher {
 
+    double sigma = 0.5;
+
     public CMATeacher(FitnessFinder finder) {
+        this(finder, 0.5);
+    }
+
+    public CMATeacher(FitnessFinder finder, double sigma) {
         super(finder);
+        this.sigma = sigma;
     }
 
     @Override
     public double[] teach(int weightNb, int[] iterations, double[] bestFitness, int maxIter) {
-        boolean findIter = maxIter == -1;
+        boolean findIter = (iterations != null && iterations.length != 0);
+        boolean getFitness = (maxIter == -1);
 
         CMAEvolutionStrategy cma = new CMAEvolutionStrategy();
         cma.options.verbosity = -1;
@@ -19,7 +27,7 @@ public class CMATeacher extends Teacher {
         cma.setDimension(weightNb);
         cma.setInitialX(0.05);
 
-        cma.setInitialStandardDeviation(0.5);
+        cma.setInitialStandardDeviation(sigma);
         cma.options.stopFitness = 1e-14; // optional setting
 
         double[] fitness = cma.init();
@@ -39,9 +47,11 @@ public class CMATeacher extends Teacher {
                 if (findIter) {
                     if (fit[0]) {
                         iterations[0] = itr;
-                        return pop[i];
+                        if (!getFitness)
+                            return pop[i];
                     }
-                } else {
+                }
+                if (getFitness) {
                     if (itr == maxIter) {
                         bestFitness[0] = cma.getBestRecentFunctionValue();
                         return cma.getMeanX();

@@ -60,7 +60,8 @@ public class GDETeacher extends Teacher {
 
     @Override
     public double[] teach(int weightNb, int[] iterations, double[] bestFitness, int maxIter) {
-        boolean findIter = maxIter == -1;
+        boolean findIter = (iterations != null && iterations.length != 0);
+        boolean getFitness = (maxIter == -1);
 
         int PNI = (int) params3;
 
@@ -101,7 +102,8 @@ public class GDETeacher extends Teacher {
                 itr++;
                 if (findIter && fit[0]) {
                     iterations[0] = itr;
-                    return group_pop[n][i];
+                    if (!getFitness)
+                        return group_pop[n][i];
                 }
             }
         }
@@ -129,7 +131,8 @@ public class GDETeacher extends Teacher {
 
                         if (findIter && fit[0]) {
                             iterations[0] = itr;
-                            return group_pop[n][i];
+                            if (!getFitness)
+                                return group_pop[n][i];
                         }
 
                         if (fitness_nextgeneration[n][i] < fitness[n][i]) {
@@ -144,7 +147,7 @@ public class GDETeacher extends Teacher {
                         }
                     }
 
-                    if (!findIter && itr == maxIter) {
+                    if (getFitness && itr == maxIter) {
                         bestFitness[0] = getMinFitness(fitness);
                         return group_pop[n][i];
                     }
