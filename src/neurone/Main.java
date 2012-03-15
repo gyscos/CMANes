@@ -21,10 +21,10 @@ public class Main {
             }
         };
 
-        double start = 0.01;
-        double end = 5.01;
+        double start = 3;
+        double end = 5;
 
-        double steps = 51;
+        double steps = 11;
 
         for (int i = 0; i < steps; i++) {
 
@@ -57,8 +57,11 @@ public class Main {
 
     static int getAverageMinIterations(Teacher teacher, ReseauNeurone reseau, int N) {
         int sum = 0;
-        for (int i = 0; i < N; i++)
-            sum += getMinIterations(teacher, reseau);
+        for (int i = 0; i < N; i++) {
+            int v = getMinIterations(teacher, reseau);
+            sum += v;
+            // System.out.println("Solution found in " + v);
+        }
         return sum / N;
     }
 
@@ -93,10 +96,11 @@ public class Main {
      * @param args
      */
     public static void main(String[] args) {
-        final boolean useTwoPoles = false;
+        final boolean useTwoPoles = true;
         final boolean useTotalInformation = true;
 
-        findBestSigma(useTwoPoles, useTotalInformation, 100);
+        findBestSigma(useTwoPoles, useTotalInformation, 25);
+
     }
 
     static ReseauNeurone makeNetwork(boolean useTwoPoles, boolean useTotalInformation) {

@@ -66,6 +66,8 @@ public class CMATeacher extends Teacher {
             }
             cma.updateDistribution(fitness);
         }
+
+        System.out.println("Could not find solution in " + itr + " iterations.");
         return new Result(cma.getMeanX(), iterations, bestFitness);
     }
 

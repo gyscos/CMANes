@@ -1,5 +1,11 @@
 package learning;
 
+/**
+ * General class designed to train a neural network.
+ * 
+ * @author gyscos
+ * 
+ */
 public abstract class Teacher {
     public static class Result {
         public double[] values;
