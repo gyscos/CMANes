@@ -2,6 +2,12 @@ package neurone;
 
 import pole.PoleFrame;
 
+/**
+ * Simple class to test manual control of the cart.
+ * 
+ * @author gyscos
+ * 
+ */
 public class Test {
 
     /**

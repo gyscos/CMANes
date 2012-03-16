@@ -42,6 +42,14 @@ public class Neurone {
         return getOutput(true);
     }
 
+    /**
+     * Gets the output from the neurone.
+     * 
+     * @param compute
+     *            TRUE if a new value must be computed ; false to get the value
+     *            from last turn (recurrent network)
+     * @return
+     */
     public double getOutput(boolean compute) {
         if (!compute)
             return oldValue;

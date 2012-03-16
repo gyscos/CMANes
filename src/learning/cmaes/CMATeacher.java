@@ -3,6 +3,7 @@ package learning.cmaes;
 import learning.FitnessFinder;
 import learning.Pair;
 import learning.Teacher;
+import learning.cmaes.fetched.CMAEvolutionStrategy;
 
 public class CMATeacher extends Teacher {
 

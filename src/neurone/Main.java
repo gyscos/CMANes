@@ -11,6 +11,15 @@ import pole.PoleFrame;
 
 public class Main {
 
+    /**
+     * Tries many simulations to find minimum iterations for various sigma
+     * values.
+     * 
+     * @param useTwoPoles
+     * @param useTotalInformation
+     * @param N
+     *            number of simulations to average on for each sigma value.
+     */
     static void findBestSigma(final boolean useTwoPoles, final boolean useTotalInformation, int N) {
         final ReseauNeurone reseau = makeNetwork(useTwoPoles, useTotalInformation);
         FitnessFinder finder = new FitnessFinder() {
@@ -24,7 +33,7 @@ public class Main {
         double start = 3;
         double end = 5;
 
-        double steps = 11;
+        double steps = 7;
 
         for (int i = 0; i < steps; i++) {
 
@@ -39,6 +48,15 @@ public class Main {
         }
     }
 
+    /**
+     * Computes average fitness obtained by the teacher after N iterations
+     * 
+     * @param teacher
+     * @param weightNb
+     * @param maxIter
+     * @param N
+     * @return
+     */
     public static double getAverageFitness(Teacher teacher, int weightNb, int maxIter, int N) {
 
         double sum = 0;
@@ -55,6 +73,15 @@ public class Main {
         return sum / N;
     }
 
+    /**
+     * Average several simulations to find the minimal required number of
+     * iterations to successfully train the neural network.
+     * 
+     * @param teacher
+     * @param reseau
+     * @param N
+     * @return
+     */
     static int getAverageMinIterations(Teacher teacher, ReseauNeurone reseau, int N) {
         int sum = 0;
         for (int i = 0; i < N; i++) {
@@ -65,6 +92,14 @@ public class Main {
         return sum / N;
     }
 
+    /**
+     * Computes the fitness for a given neural network.
+     * 
+     * @param reseau
+     * @param useTwoPoles
+     * @param useTotalInformation
+     * @return A pair with <Fitness, Success>
+     */
     public static Pair<Double, Boolean> getFitness(final ReseauNeurone reseau, boolean useTwoPoles,
             boolean useTotalInformation) {
 
@@ -77,11 +112,28 @@ public class Main {
         return new Pair<Double, Boolean>(-pole.getFitnessF1(), !pole.lost);
     }
 
+    /**
+     * Computes the minimal required iterations for the teacher to successfully
+     * train the neural network.
+     * 
+     * @param teacher
+     * @param reseau
+     * @return
+     */
     static int getMinIterations(Teacher teacher, ReseauNeurone reseau) {
         int weightNb = reseau.getSize();
         return teacher.teach(weightNb).iterations;
     }
 
+    /**
+     * Returns true if the given Neural network is able to run through a whole
+     * game without losing.
+     * 
+     * @param reseau
+     * @param useTwoPoles
+     * @param useTotalInformation
+     * @return
+     */
     public static boolean isFit(ReseauNeurone reseau, boolean useTwoPoles, boolean useTotalInformation) {
 
         Pole pole = new Pole(useTwoPoles, useTotalInformation);
@@ -99,10 +151,18 @@ public class Main {
         final boolean useTwoPoles = true;
         final boolean useTotalInformation = true;
 
-        findBestSigma(useTwoPoles, useTotalInformation, 25);
+        findBestSigma(useTwoPoles, useTotalInformation, 100);
 
     }
 
+    /**
+     * Creates adequate neural network for the pole balancing problem in the
+     * given configuration
+     * 
+     * @param useTwoPoles
+     * @param useTotalInformation
+     * @return
+     */
     static ReseauNeurone makeNetwork(boolean useTwoPoles, boolean useTotalInformation) {
         ReseauNeurone reseau = new ReseauNeurone();
 
@@ -140,6 +200,13 @@ public class Main {
         return reseau;
     }
 
+    /**
+     * Shows a graphical window with a cart controlled by the given controller.
+     * 
+     * @param controller
+     * @param useTwoPoles
+     * @param useTotalInformation
+     */
     static void showController(PoleController controller, boolean useTwoPoles, boolean useTotalInformation) {
         PoleFrame frame = new PoleFrame(useTwoPoles, useTotalInformation);
         frame.setController(controller);
