@@ -20,40 +20,112 @@ public class Pole {
     boolean                    useTwoPoles;
     boolean                    useTotalInformation;
 
+    /**
+     * Length of main pole
+     */
     public static final double poleLength      = 1.;
+
+    /**
+     * Length of second pole
+     */
     public static final double pole2Length     = 0.1;
 
+    /**
+     * Mass of cart without pole
+     */
     public static final double cartMass        = 1.;
+
+    /**
+     * Mass of main pole
+     */
     public static final double poleMass        = poleLength;
+
+    /**
+     * Mass of second pole
+     */
     public static final double pole2Mass       = pole2Length;
 
+    /**
+     * Maximum force applied to the cart
+     */
     public static final double forceMag        = 10;
     public static final double g               = 9.8;
+
+    /**
+     * Time step
+     */
     public static final double tau             = 0.01;
 
+    /**
+     * Cart friction
+     */
     public static final double fricCart        = 0.0005;
+
+    /**
+     * Friction for main pole
+     */
     public static final double fricPole        = 0.000002;
+
+    /**
+     * Friction for second pole
+     */
     public static final double fric2Pole       = 0.000002;
 
+    /**
+     * Total mass of cart in single pole situation
+     */
     public static final double total1Mass      = cartMass + poleMass;
+
+    /**
+     * Total mass of cart in 2 poles configuration
+     */
     public static final double total2Mass      = cartMass + poleMass + pole2Mass;
 
+    /**
+     * Main pole half length
+     */
     public static final double halfPole        = 0.5 * poleLength;
+
+    /**
+     * Second pole half length
+     */
     public static final double half2Pole       = 0.5 * pole2Length;
     public static final double poleMassLength  = halfPole * poleMass;
     public static final double pole2MassLength = half2Pole * pole2Mass;
 
+    /**
+     * Maximum position amplitude. Player lose if position exceeds this value.
+     */
     public static final double posLimit        = 2.4;
 
+    /**
+     * Angle limit in the single pole case
+     */
     public static final double angle1Limit     = 0.2;
+
+    /**
+     * Angle limit in the 2 poles case
+     */
     public static final double angle2Limit     = 0.63;
 
+    /**
+     * Time limit for the simulation. Player wins if he doesn't loose before
+     * time limit.
+     */
     public static final int    timeLimit       = 100000;
 
     public static final double fourthirds      = 4. / 3.;
+
     int                        steps;
 
+    /**
+     * List of 100 last positions, to compute FitnessF2.
+     */
     LinkedList<Double>         posList         = new LinkedList<Double>();
+
+    /**
+     * List of 100 last velocities, to compute FitnessF2
+     */
     LinkedList<Double>         posDotList      = new LinkedList<Double>();
 
     LinkedList<Double>         angleList       = new LinkedList<Double>();
@@ -62,6 +134,9 @@ public class Pole {
     LinkedList<Double>         angle2List      = new LinkedList<Double>();
     LinkedList<Double>         angle2DotList   = new LinkedList<Double>();
 
+    /**
+     * TRUE if the player lost, FALSE if the player hasn't lost (yet)
+     */
     public boolean             lost            = false;
 
     public Pole(boolean useTwoPoles, boolean useTotalInformation) {
@@ -69,6 +144,9 @@ public class Pole {
         this.useTotalInformation = useTotalInformation;
     }
 
+    /**
+     * Blocks until simulation ended
+     */
     public void end() {
         try {
             thread.join();
@@ -77,9 +155,23 @@ public class Pole {
         }
     }
 
+    /**
+     * Can optionnally override ; called when a game is over.
+     */
     public void gameOver() {
     }
 
+    /**
+     * Retrieves data from the game. Depends on the configuration.<br />
+     * First comes position (and velocity if using complete information).<br />
+     * Then comes first angle (and first angular velocity... )<br />
+     * Then comes angle for the second pole if using 2 poles (and its angular
+     * velocity...)<br />
+     * Hence, the length of the array depends on the configuration ; it can be
+     * 6, 3, 4 or 2.
+     * 
+     * @return
+     */
     public double[] getData() {
         double[] result;
         if (useTwoPoles) {
@@ -114,10 +206,20 @@ public class Pole {
         return result;
     }
 
+    /**
+     * Returns the F1 fitness, that is, how long before the player lost.
+     * 
+     * @return
+     */
     public double getFitnessF1() {
         return steps / 1000d;
     }
 
+    /**
+     * F2 fitness, rewarding stability over the last 100 steps.
+     * 
+     * @return
+     */
     public double getFitnessF2() {
         if (steps < 100)
             return 0;

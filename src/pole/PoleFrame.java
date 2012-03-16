@@ -12,6 +12,13 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.JFrame;
 
+/**
+ * Graphical window showing a cart. Can be controlled by either a PoleController
+ * or the keyboard.
+ * 
+ * @author gyscos
+ * 
+ */
 public class PoleFrame extends JFrame implements Runnable {
     // next three are for double-buffering
     Dimension      offDimension;

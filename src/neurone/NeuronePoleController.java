@@ -2,6 +2,12 @@ package neurone;
 
 import pole.PoleController;
 
+/**
+ * Implementation of PoleController using a Neural Network to take decisions.
+ * 
+ * @author gyscos
+ * 
+ */
 public class NeuronePoleController implements PoleController {
 
     ReseauNeurone reseau;
