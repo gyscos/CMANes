@@ -20,7 +20,21 @@ public class Main {
      * @param N
      *            number of simulations to average on for each sigma value.
      */
-    static void findBestSigma(final boolean useTwoPoles, final boolean useTotalInformation, int N) {
+    static void findBestSigma(final boolean useTwoPoles, final boolean useTotalInformation, int N, boolean gnuplotOutput) {
+
+        System.out.println("Minimum iterations before successful solution :");
+        if (!gnuplotOutput) {
+            if (useTwoPoles)
+                System.out.print("[ 2 Poles ; ");
+            else
+                System.out.print("[ Single Pole ; ");
+
+            if (useTotalInformation)
+                System.out.println("Complete info ]");
+            else
+                System.out.println("Incomplete info ]");
+        }
+
         final ReseauNeurone reseau = makeNetwork(useTwoPoles, useTotalInformation);
         FitnessFinder finder = new FitnessFinder() {
             @Override
@@ -30,21 +44,28 @@ public class Main {
             }
         };
 
-        double start = 3;
-        double end = 5;
+        double start = 0.1;
+        double end = 50;
 
-        double steps = 7;
+        int steps = 30;
+
+        double[] sigmas = Helper.interpolate(start, end, steps);
 
         for (int i = 0; i < steps; i++) {
 
             // Find sigma
-            double x = i / (steps - 1);
-            double sigma = start + (end - start) * x;
+            double sigma = sigmas[i];
+
+            if (!gnuplotOutput)
+                System.out.println("Using sigma = " + sigma);
 
             // See how it fares
             Teacher teacher = new CMATeacher(finder, sigma);
             int iter = getAverageMinIterations(teacher, reseau, N);
-            System.out.println("[sigma = " + sigma + "] : " + iter);
+            if (gnuplotOutput)
+                System.out.println(sigma + " " + iter);
+            else
+                System.out.println("[sigma = " + sigma + "] : " + iter);
         }
     }
 
@@ -148,10 +169,12 @@ public class Main {
      * @param args
      */
     public static void main(String[] args) {
-        final boolean useTwoPoles = true;
-        final boolean useTotalInformation = true;
 
-        findBestSigma(useTwoPoles, useTotalInformation, 100);
+        final boolean useTwoPoles = false;
+        final boolean useTotalInformation = true;
+        final boolean gnuplotOutput = true;
+
+        findBestSigma(useTwoPoles, useTotalInformation, 50, gnuplotOutput);
 
     }
 
