@@ -44,10 +44,10 @@ public class Main {
             }
         };
 
-        double start = 0.1;
-        double end = 50;
+        double start = 0.5;
+        double end = 10;
 
-        int steps = 30;
+        int steps = 20;
 
         double[] sigmas = Helper.interpolate(start, end, steps);
 
@@ -61,7 +61,7 @@ public class Main {
 
             // See how it fares
             Teacher teacher = new CMATeacher(finder, sigma);
-            int iter = getAverageMinIterations(teacher, reseau, N);
+            double iter = getAverageMinIterations(teacher, reseau, N);
             if (gnuplotOutput)
                 System.out.println(sigma + " " + iter);
             else
@@ -103,14 +103,14 @@ public class Main {
      * @param N
      * @return
      */
-    static int getAverageMinIterations(Teacher teacher, ReseauNeurone reseau, int N) {
+    static double getAverageMinIterations(Teacher teacher, ReseauNeurone reseau, int N) {
         int sum = 0;
         for (int i = 0; i < N; i++) {
             int v = getMinIterations(teacher, reseau);
             sum += v;
             // System.out.println("Solution found in " + v);
         }
-        return sum / N;
+        return (double) sum / N;
     }
 
     /**
@@ -170,11 +170,11 @@ public class Main {
      */
     public static void main(String[] args) {
 
-        final boolean useTwoPoles = false;
+        final boolean useTwoPoles = true;
         final boolean useTotalInformation = true;
         final boolean gnuplotOutput = true;
 
-        findBestSigma(useTwoPoles, useTotalInformation, 50, gnuplotOutput);
+        findBestSigma(useTwoPoles, useTotalInformation, 100, gnuplotOutput);
 
     }
 
